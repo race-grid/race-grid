@@ -30,7 +30,7 @@ public class GameBoard {
         }
     }
 
-    public Vector playerCurrentPosition(Id playerId) {
+    public Vector getPlayerCurrentPosition(Id playerId) {
         List<Vector> history = playerStates.get(playerId).positionHistory();
         return history.get(history.size() - 1);
     }

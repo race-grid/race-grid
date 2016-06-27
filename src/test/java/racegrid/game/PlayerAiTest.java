@@ -23,7 +23,7 @@ public class PlayerAiTest {
     @Before
     public void setup(){
         List<Vector> blockedPositions = Arrays.asList(new Vector(1, 0));
-        Terrain terrain = Terrain.fromList(blockedPositions);
+        Terrain terrain = BlockTerrain.fromList(blockedPositions);
         board = new MutableGameBoard(terrain);
     }
 

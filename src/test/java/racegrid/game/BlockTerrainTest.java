@@ -8,9 +8,9 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-public class TerrainTest {
+public class BlockTerrainTest {
 
-    private Terrain terrain = Terrain.fromList(Arrays.asList(new Vector(1, 0)));
+    private BlockTerrain terrain = BlockTerrain.fromList(Arrays.asList(new Vector(1, 0)));
 
     @Test
     public void isValidMove(){

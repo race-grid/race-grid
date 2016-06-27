@@ -22,7 +22,7 @@ public class MutableGameBoard extends GameBoard {
     }
 
     public void makeMove(Id id, Vector destination) {
-        Optional<Vector> collision = terrain.collisionBetween(playerCurrentPosition(id), destination);
+        Optional<Vector> collision = terrain.collisionBetween(getPlayerCurrentPosition(id), destination);
         Vector actualNewPos = collision.orElse(destination);
         playerStates.get(id).positionHistory().add(actualNewPos);
     }

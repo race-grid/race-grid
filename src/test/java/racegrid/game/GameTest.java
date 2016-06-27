@@ -24,7 +24,7 @@ public class GameTest {
 
     @Test(expected = RacegridException.class)
     public void makeMove_shouldNotAllowMoveAtOpponentsTurn() {
-        MutableGameBoard board = new MutableGameBoard(Terrain.empty());
+        MutableGameBoard board = new MutableGameBoard(BlockTerrain.empty());
         board.addPlayer(P1, new Vector(0, 0));
         board.addPlayer(P2, new Vector(1, 0));
         Game game = new Game(board, P1.id());
@@ -33,7 +33,7 @@ public class GameTest {
 
     @Test(expected = RacegridException.class)
     public void makeMove_shouldNotAllowInvalidMove() {
-        MutableGameBoard board = new MutableGameBoard(Terrain.empty());
+        MutableGameBoard board = new MutableGameBoard(BlockTerrain.empty());
         board.addPlayer(P1, new Vector(0, 0));
         board.addPlayer(P2, new Vector(1, 0));
         Game game = new Game(board, P1.id());
@@ -42,7 +42,7 @@ public class GameTest {
 
     @Test
     public void makeMove() {
-        MutableGameBoard board = new MutableGameBoard(Terrain.empty());
+        MutableGameBoard board = new MutableGameBoard(BlockTerrain.empty());
         board.addPlayer(P1, new Vector(0, 0));
         board.addPlayer(P2, new Vector(1, 0));
         Game game = new Game(board, P1.id());

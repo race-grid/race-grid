@@ -64,7 +64,7 @@ public class GameBoardTest {
         when(terrain.collisionBetween(any(), any())).thenReturn(Optional.of(collisonPos));
         board.addPlayer(new Player("p1", ID), new Vector(0, 0));
         board.makeMove(ID, destination);
-        assertEquals(collisonPos, board.playerCurrentPosition(ID));
+        assertEquals(collisonPos, board.getPlayerCurrentPosition(ID));
     }
 
     @Test

@@ -59,7 +59,7 @@ public class TimebasedGameRunnerTest {
         GameSettings settings = new GameSettings(50);
         TimebasedGameRunner game = TimebasedGameRunner.vsAi(PLAYER, 2, settings);
         game.startGame();
-        Thread.sleep(settings.turnDurationMillis() + 1);
+        Thread.sleep(settings.turnDurationMillis() + 10);
         game.userMakeMove(USER_ID, new Vector(0, 0));
     }
 }

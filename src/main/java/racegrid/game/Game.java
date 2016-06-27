@@ -53,7 +53,7 @@ public class Game {
      * @return valid moves mapping to resulting collision position (if collision)
      */
     private Map<Vector, Optional<Vector>> getCollisionDataForGivenMoves(Id playerId, List<Vector> moves) {
-        Vector from = board.playerCurrentPosition(playerId);
+        Vector from = board.getPlayerCurrentPosition(playerId);
         return moves.stream().collect(Collectors.toMap(
                 to -> to,
                 to -> board.getTerrain().collisionBetween(from, to)
@@ -67,7 +67,7 @@ public class Game {
     }
 
     private List<Vector> possibleNextMovesBasedOnVelocity(Id id) {
-        Vector currentPos = board.playerCurrentPosition(id);
+        Vector currentPos = board.getPlayerCurrentPosition(id);
         Vector prevPos = board.getPlayerPreviousPosition(id);
         Vector velocity = currentPos.minus(prevPos);
         Vector nextPosition = currentPos.plus(velocity);

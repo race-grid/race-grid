@@ -2,7 +2,7 @@ package racegrid.game.gameRunner;
 
 import racegrid.game.Game;
 import racegrid.game.MutableGameBoard;
-import racegrid.game.Terrain;
+import racegrid.game.BlockTerrain;
 import racegrid.model.GameState;
 import racegrid.model.Id;
 import racegrid.model.Player;
@@ -21,7 +21,7 @@ public class SlowGameRunner extends AbstractGameRunner implements GameRunner {
     }
 
     public static SlowGameRunner players(List<Player> players) {
-        MutableGameBoard board = new MutableGameBoard(Terrain.empty());
+        MutableGameBoard board = new MutableGameBoard(BlockTerrain.empty());
         for (int i = 0; i < players.size(); i++) {
             Vector startPosition = new Vector(i, 0);
             board.addPlayer(players.get(i), startPosition);
