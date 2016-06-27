@@ -11,7 +11,7 @@ public class Vector {
 
     @JsonCreator
     public Vector(@JsonProperty("x") int x,
-                  @JsonProperty("y") int y){
+                  @JsonProperty("y") int y) {
         this.x = x;
         this.y = y;
     }
@@ -44,11 +44,19 @@ public class Vector {
         return x == p.x && y == p.y;
     }
 
+    public Vector plus(Vector other) {
+        return new Vector(x + other.x, y + other.y);
+    }
+
+    public Vector plus(int dx, int dy) {
+        return new Vector(x + dx, y + dy);
+    }
+
     public Vector minus(Vector other) {
         return new Vector(x - other.x, y - other.y);
     }
 
-    public Vector plus(Vector other) {
-        return new Vector(x + other.x, y + other.y);
+    public Vector minus(int dx, int dy) {
+        return new Vector(x - dx, y - dy);
     }
 }
