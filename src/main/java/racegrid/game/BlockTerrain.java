@@ -1,10 +1,12 @@
 package racegrid.game;
 
+import racegrid.model.Line;
 import racegrid.model.Vector;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class BlockTerrain implements Terrain{
 
@@ -28,6 +30,11 @@ public class BlockTerrain implements Terrain{
             return Optional.of(to);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Stream<Line> getGraphicLines() {
+        return Stream.empty(); //TODO
     }
 
 
