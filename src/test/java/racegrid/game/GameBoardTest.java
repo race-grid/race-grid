@@ -19,13 +19,13 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class GameBoardTest {
 
-    private Terrain terrain = mock(Terrain.class);
+    private RaceTrack track = mock(RaceTrack.class);
     private MutableGameBoard board;
     private Id ID = Id.of("ID");
 
     @Before
     public void setup(){
-        board = new MutableGameBoard(terrain);
+        board = new MutableGameBoard(track);
     }
 
     @Test
@@ -41,14 +41,14 @@ public class GameBoardTest {
 
     @Test
     public void makeMove(){
-        when(terrain.collisionBetween(any(), any())).thenReturn(Optional.empty());
+        when(track.collisionBetween(any(), any())).thenReturn(Optional.empty());
         board.addPlayer(new Player("p1", ID), new Vector(0, 0));
         board.makeMove(ID, new Vector(1, 0));
     }
 
     @Test
     public void getPreviousPositions(){
-        when(terrain.collisionBetween(any(), any())).thenReturn(Optional.empty());
+        when(track.collisionBetween(any(), any())).thenReturn(Optional.empty());
         board.addPlayer(new Player("p1", ID), new Vector(0, 0));
         board.makeMove(ID, new Vector(1, 0));
         List<Vector> moves = board.getPlayerPositionHistory(ID).collect(Collectors.toList());
@@ -61,7 +61,7 @@ public class GameBoardTest {
     public void makeMove_shouldSetProperPositionAfterCollision(){
         Vector collisonPos = new Vector(1, 0);
         Vector destination = new Vector(2, 0);
-        when(terrain.collisionBetween(any(), any())).thenReturn(Optional.of(collisonPos));
+        when(track.collisionBetween(any(), any())).thenReturn(Optional.of(collisonPos));
         board.addPlayer(new Player("p1", ID), new Vector(0, 0));
         board.makeMove(ID, destination);
         assertEquals(collisonPos, board.getPlayerCurrentPosition(ID));

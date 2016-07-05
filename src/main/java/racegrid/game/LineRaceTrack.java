@@ -2,24 +2,20 @@ package racegrid.game;
 
 import racegrid.Geometry;
 import racegrid.model.Line;
+import racegrid.model.RaceTrackData;
 import racegrid.model.Vector;
 import racegrid.model.ExactVector;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class LineTerrain implements Terrain {
+public class LineRaceTrack implements RaceTrack {
 
-    private final List<Line> walls;
+    private final RaceTrackData trackData;
 
-    private LineTerrain(List<Line> walls) {
-        this.walls = walls;
-    }
-
-    public static LineTerrain fromList(List<Line> lines) {
-        return new LineTerrain(lines);
+    public LineRaceTrack(RaceTrackData trackData) {
+        this.trackData = trackData;
     }
 
     @Override
@@ -29,7 +25,7 @@ public class LineTerrain implements Terrain {
         ExactVector exactTo = ExactVector.of(to);
 
         Line movement = new Line(exactFrom, exactTo);
-        Stream<ExactVector> wallIntersections = walls.stream()
+        Stream<ExactVector> wallIntersections = trackData.walls().stream()
                 .map(wall -> Geometry.linesIntersect(movement, wall))
                 .filter(Optional::isPresent)
                 .map(Optional::get);
@@ -38,8 +34,8 @@ public class LineTerrain implements Terrain {
     }
 
     @Override
-    public Stream<Line> getGraphicLines(){
-        return walls.stream();
+    public RaceTrackData getData() {
+        return trackData;
     }
 
     private Optional<ExactVector> closestTo(Stream<ExactVector> others, ExactVector target) {

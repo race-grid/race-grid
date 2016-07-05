@@ -56,7 +56,7 @@ public class Game {
         Vector from = board.getPlayerCurrentPosition(playerId);
         return moves.stream().collect(Collectors.toMap(
                 to -> to,
-                to -> board.getTerrain().collisionBetween(from, to)
+                to -> board.getTrack().collisionBetween(from, to)
         ));
     }
 

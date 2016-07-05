@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public class MutableGameBoard extends GameBoard {
 
-    public MutableGameBoard(Terrain terrain) {
-        super(terrain);
+    public MutableGameBoard(RaceTrack track) {
+        super(track);
     }
 
     public void addPlayer(Player player, Vector position) {
@@ -22,7 +22,7 @@ public class MutableGameBoard extends GameBoard {
     }
 
     public void makeMove(Id id, Vector destination) {
-        Optional<Vector> collision = terrain.collisionBetween(getPlayerCurrentPosition(id), destination);
+        Optional<Vector> collision = track.collisionBetween(getPlayerCurrentPosition(id), destination);
         Vector actualNewPos = collision.orElse(destination);
         playerStates.get(id).positionHistory().add(actualNewPos);
     }

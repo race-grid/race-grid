@@ -22,9 +22,9 @@ public class PlayerAiTest {
 
     @Before
     public void setup(){
-        List<Vector> blockedPositions = Arrays.asList(new Vector(1, 0));
-        Terrain terrain = BlockTerrain.fromList(blockedPositions);
-        board = new MutableGameBoard(terrain);
+        List<Vector> blockedPositions = Collections.singletonList(new Vector(1, 0));
+        RaceTrack track = BlockRaceTrack.fromList(blockedPositions);
+        board = new MutableGameBoard(track);
     }
 
     @Test

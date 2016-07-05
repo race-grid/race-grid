@@ -24,7 +24,7 @@ public class GameTest {
 
     @Test(expected = RacegridException.class)
     public void makeMove_shouldNotAllowMoveAtOpponentsTurn() {
-        MutableGameBoard board = new MutableGameBoard(BlockTerrain.empty());
+        MutableGameBoard board = new MutableGameBoard(BlockRaceTrack.empty());
         board.addPlayer(P1, new Vector(0, 0));
         board.addPlayer(P2, new Vector(1, 0));
         Game game = new Game(board, P1.id());
@@ -33,7 +33,7 @@ public class GameTest {
 
     @Test(expected = RacegridException.class)
     public void makeMove_shouldNotAllowInvalidMove() {
-        MutableGameBoard board = new MutableGameBoard(BlockTerrain.empty());
+        MutableGameBoard board = new MutableGameBoard(BlockRaceTrack.empty());
         board.addPlayer(P1, new Vector(0, 0));
         board.addPlayer(P2, new Vector(1, 0));
         Game game = new Game(board, P1.id());
@@ -42,7 +42,7 @@ public class GameTest {
 
     @Test
     public void makeMove() {
-        MutableGameBoard board = new MutableGameBoard(BlockTerrain.empty());
+        MutableGameBoard board = new MutableGameBoard(BlockRaceTrack.empty());
         board.addPlayer(P1, new Vector(0, 0));
         board.addPlayer(P2, new Vector(1, 0));
         Game game = new Game(board, P1.id());
@@ -57,12 +57,12 @@ public class GameTest {
     @Test
     public void getValidMoves_shouldIndicateCollisions() {
         Vector blockedPos = new Vector(1, 0);
-        Terrain terrain = mock(Terrain.class);
-        MutableGameBoard board = new MutableGameBoard(terrain);
+        RaceTrack track = mock(RaceTrack.class);
+        MutableGameBoard board = new MutableGameBoard(track);
         board.addPlayer(new Player("p1", P1.id()), new Vector(0, 0));
 
-        when(terrain.collisionBetween(any(), any())).thenReturn(Optional.empty());
-        when(terrain.collisionBetween(any(), eq(blockedPos))).thenReturn(Optional.of(blockedPos));
+        when(track.collisionBetween(any(), any())).thenReturn(Optional.empty());
+        when(track.collisionBetween(any(), eq(blockedPos))).thenReturn(Optional.of(blockedPos));
 
         Game game = new Game(board, P1.id());
         Map<Vector, Optional<Vector>> moves = game.getValidMovesWithCollisionData(P1.id());

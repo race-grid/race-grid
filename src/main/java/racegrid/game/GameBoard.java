@@ -15,11 +15,11 @@ import java.util.stream.Stream;
 public class GameBoard {
 
 
-    final Terrain terrain;
+    final RaceTrack track;
     final HashMap<Id, PlayerGameState> playerStates = new HashMap<>();
 
-    public GameBoard(Terrain terrain) {
-        this.terrain = terrain;
+    public GameBoard(RaceTrack track) {
+        this.track = track;
     }
 
     void assertHasNoPlayerWithGivenId(Id id) {
@@ -35,8 +35,8 @@ public class GameBoard {
         return history.get(history.size() - 1);
     }
 
-    public Terrain getTerrain(){
-        return terrain;
+    public RaceTrack getTrack(){
+        return track;
     }
 
     public Stream<Vector> getPlayerPositionHistory(Id playerId) {

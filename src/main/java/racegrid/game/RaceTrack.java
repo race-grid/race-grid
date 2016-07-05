@@ -1,14 +1,13 @@
 package racegrid.game;
 
-import racegrid.model.Line;
+import racegrid.model.RaceTrackData;
 import racegrid.model.Vector;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
-public interface Terrain {
+public interface RaceTrack {
 
     Optional<Vector> collisionBetween(Vector from, Vector to);
 
-    Stream<Line> getGraphicLines();
+    RaceTrackData getData();
 }

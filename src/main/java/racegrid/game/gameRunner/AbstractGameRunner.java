@@ -3,7 +3,7 @@ package racegrid.game.gameRunner;
 import racegrid.game.Game;
 import racegrid.game.GameBoard;
 import racegrid.game.MutableGameBoard;
-import racegrid.game.BlockTerrain;
+import racegrid.game.BlockRaceTrack;
 import racegrid.model.Id;
 import racegrid.model.Player;
 import racegrid.model.Vector;
@@ -25,7 +25,7 @@ public class AbstractGameRunner {
     }
 
     protected static MutableGameBoard createBotsAndGameboard(Player userPlayer, Map<Id, PlayerAi> bots, int numOpponents) {
-        MutableGameBoard board = new MutableGameBoard(BlockTerrain.empty());
+        MutableGameBoard board = new MutableGameBoard(BlockRaceTrack.empty());
         Vector playerStartPos = new Vector(0, 0);
         board.addPlayer(userPlayer, playerStartPos);
         for (int i = 0; i < numOpponents; i++) {
