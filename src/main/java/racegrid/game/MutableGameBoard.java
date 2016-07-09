@@ -17,17 +17,26 @@ public class MutableGameBoard extends GameBoard {
 
     public void addPlayer(Player player, Vector position) {
         assertHasNoPlayerWithGivenId(player.id());
-        PlayerGameState data = new PlayerGameState(player, new ArrayList<>());
-        data.positionHistory().add(position);
-        playerStates.put(player.id(), data);
+        PlayerGameState state = new PlayerGameState(player, new ArrayList<>(), false);
+        state.positionHistory().add(position);
+        playerStates.put(player.id(), state);
     }
 
-    public void makeMove(Id id, Vector destination) {
-        Optional<Collision> collision = collisionHandler.collisionBetween(getPlayerCurrentPosition(id), destination);
+    public void makeMove(Id playerId, Vector destination) {
+        Vector from = getPlayerCurrentPosition(playerId);
+        PlayerGameState state = playerStates.get(playerId);
+
+        Optional<Collision> collision = collisionHandler.collisionBetween(from, destination);
+
         Vector actualNewPos = collision
                 .map(Collision::resultingPosition)
                 .orElse(destination);
-        playerStates.get(id).positionHistory().add(actualNewPos);
+        state.positionHistory().add(actualNewPos);
+
+        boolean playerPassedGoalLine = collisionHandler.passingGoalLine(from, actualNewPos);
+        if(playerPassedGoalLine){
+            state.setHasFinished();
+        }
     }
 
 }

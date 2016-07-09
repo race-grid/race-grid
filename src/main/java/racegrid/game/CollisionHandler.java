@@ -13,13 +13,18 @@ import java.util.stream.Stream;
 
 public class CollisionHandler {
 
-    private final RaceTrack trackData;
+    private final RaceTrack track;
 
-    public CollisionHandler(RaceTrack trackData) {
-        this.trackData = trackData;
+    public CollisionHandler(RaceTrack track) {
+        this.track = track;
     }
 
-    public Optional<Collision> collisionBetween(Vector from, Vector to){
+    public boolean passingGoalLine(Vector from, Vector to) {
+        Line movement = new Line(ExactVector.of(from), ExactVector.of(to));
+        return Geometry.linesIntersect(movement, track.goalLine()).isPresent();
+    }
+
+    public Optional<Collision> collisionBetween(Vector from, Vector to) {
         Collision collision = carCollision(from, to)
                 .orElseGet(() -> wallCollision(from, to)
                         .orElse(null));
@@ -29,16 +34,16 @@ public class CollisionHandler {
         return Optional.empty();
     }
 
-    private Optional<Collision> carCollision(Vector from, Vector to){
+    private Optional<Collision> carCollision(Vector from, Vector to) {
         return Optional.empty();//TODO
     }
 
-    private Optional<Collision> wallCollision(Vector from, Vector to){
+    private Optional<Collision> wallCollision(Vector from, Vector to) {
         ExactVector exactFrom = ExactVector.of(from);
         ExactVector exactTo = ExactVector.of(to);
         Line movement = new Line(exactFrom, exactTo);
 
-        Stream<ExactVector> wallIntersections = trackData.walls().stream()
+        Stream<ExactVector> wallIntersections = track.walls().stream()
                 .map(wall -> Geometry.linesIntersect(movement, wall))
                 .filter(Optional::isPresent)
                 .map(Optional::get);

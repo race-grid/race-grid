@@ -1,6 +1,5 @@
 package racegrid.game;
 
-import org.junit.Assert;
 import org.junit.Test;
 import racegrid.model.Collision;
 import racegrid.model.CollisionType;
@@ -20,6 +19,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -38,7 +39,7 @@ public class GameTest {
         return new RaceTrack(walls, 10, 10, null, startPositions);
     }
 
-    private CollisionHandler collisionHandler(){
+    private CollisionHandler collisionHandler() {
         return new CollisionHandler(track());
     }
 
@@ -63,6 +64,22 @@ public class GameTest {
     }
 
     @Test
+    public void makeMove_shouldBeAbleToFinish() {
+        CollisionHandler collisionHandler = mock(CollisionHandler.class);
+        MutableGameBoard board = new MutableGameBoard(collisionHandler);
+        board.addPlayer(P1, new Vector(0, 0));
+        Game game = new Game(board, P1.id());
+
+        doReturn(true).when(collisionHandler).passingGoalLine(any(), any());
+        doReturn(Optional.empty()).when(collisionHandler).collisionBetween(any(), any());
+
+        assertFalse(game.getBoard().getPlayerStates().get(P1.id()).hasFinished());
+        game.makeMove(P1.id(), new Vector(1, 1));
+        assertTrue(game.getBoard().getPlayerStates().get(P1.id()).hasFinished());
+
+    }
+
+    @Test
     public void makeMove() {
         RaceTrack track = track();
         CollisionHandler collisionHandler = new CollisionHandler(track);
@@ -73,9 +90,9 @@ public class GameTest {
         game.makeMove(P1.id(), new Vector(2, 1));
         Map<Id, PlayerGameState> states = game.getBoard().getPlayerStates();
         assertEquals(2, states.size());
-        Assert.assertEquals(P2.id(), game.getActivePlayerId());
-        Assert.assertEquals(2, states.get(P1.id()).positionHistory().size());
-        Assert.assertEquals(1, states.get(P2.id()).positionHistory().size());
+        assertEquals(P2.id(), game.getActivePlayerId());
+        assertEquals(2, states.get(P1.id()).positionHistory().size());
+        assertEquals(1, states.get(P2.id()).positionHistory().size());
     }
 
     @Test
@@ -93,7 +110,7 @@ public class GameTest {
         Map<Vector, Optional<Collision>> moves = game.getValidMovesWithCollisionData(P1.id());
 
         assertEquals(9, moves.size());
-        Assert.assertEquals(Optional.of(collision), moves.get(blockedPos));
+        assertEquals(Optional.of(collision), moves.get(blockedPos));
     }
 
 }

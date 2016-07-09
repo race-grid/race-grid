@@ -125,7 +125,7 @@ public class ApiControllerTest {
 
         Map<Id, PlayerGameState> playerStates = new HashMap<>();
         List<Vector> positionHistory = Arrays.asList(new Vector(0, 0), new Vector(1, 2));
-        playerStates.put(userId, new PlayerGameState(new Player("NAME", userId), positionHistory));
+        playerStates.put(userId, new PlayerGameState(new Player("NAME", userId), positionHistory, false));
         GameState expectedState = new GameState(userId, playerStates, 10l);
         doReturn(expectedState).when(engine).userMakeMove(any(), any(), any());
 

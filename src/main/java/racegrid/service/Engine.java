@@ -118,11 +118,6 @@ public class Engine {
         return game.userMakeMove(auth.id(), destination);
     }
 
-    private void printAsciiBoard(GameRunner game) {
-        String ascii = AsciiBoard.boardToString(game.getBoard());
-        System.out.println(ascii);
-    }
-
     public Map<Vector, Optional<Collision>> getValidMovesWithCollisionData(Id gameId, UserAuth auth) {
         User user = assertUserExistsAndAuthorized(auth);
         GameRunner game = assertGameExists(gameId);

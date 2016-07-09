@@ -10,12 +10,15 @@ import java.util.List;
 public class PlayerGameState {
     private final Player player;
     private final List<Vector> positionHistory;
+    private boolean hasFinished;
 
     @JsonCreator
     public PlayerGameState(@JsonProperty("player") Player player,
-                           @JsonProperty("positionHistory") List<Vector> positionHistory) {
+                           @JsonProperty("positionHistory") List<Vector> positionHistory,
+                           @JsonProperty("hasFinished") boolean hasFinished) {
         this.player = player;
         this.positionHistory = positionHistory;
+        this.hasFinished = hasFinished;
     }
 
     @JsonProperty
@@ -28,8 +31,17 @@ public class PlayerGameState {
         return positionHistory;
     }
 
+    public void setHasFinished() {
+        hasFinished = true;
+    }
+
+    @JsonProperty
+    public boolean hasFinished() {
+        return hasFinished;
+    }
+
     @JsonIgnore
     public PlayerGameState getCopy() {
-        return new PlayerGameState(player, new ArrayList<>(positionHistory));
+        return new PlayerGameState(player, new ArrayList<>(positionHistory), hasFinished);
     }
 }
