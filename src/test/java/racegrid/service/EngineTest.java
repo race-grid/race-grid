@@ -1,5 +1,6 @@
 package racegrid.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import racegrid.model.Collision;
 import racegrid.model.RacegridException;
@@ -22,9 +23,10 @@ public class EngineTest {
     private final Id UNKNOWN_ID = Id.of("UNKNOWN_ID");
     private final UUID UNKNOWN_HASH = UUID.randomUUID();
     private GameSettings SETTINGS = new GameSettings(5);
+    private TrackRepository trackRepository = new TrackRepository(new ObjectMapper());
     private UserRepository userRepository = new UserRepository();
     private GameRepository gameRepository = new GameRepository(userRepository);
-    private Engine engine = new Engine(userRepository, gameRepository);
+    private Engine engine = new Engine(trackRepository, userRepository, gameRepository);
 
     @Test(expected = RacegridException.class)
     public void getValidMovesWithCollisionData_shouldThrowForUnknownUser() {
@@ -80,7 +82,7 @@ public class EngineTest {
         UserAuth auth = authFromNewUser(response);
         Id gameId = engine.newTimedGameVsAi(auth, 2, new GameSettings(5));
         engine.startTimedGame(gameId);
-        GameState state = engine.userMakeMove(gameId, auth, new Vector(0, 0));
+        GameState state = engine.userMakeMove(gameId, auth, new Vector(10, 5));
         assertNotNull(state);
     }
 

@@ -22,6 +22,7 @@ import racegrid.model.User;
 import racegrid.model.Vector;
 import racegrid.service.GameRepository;
 import racegrid.service.Engine;
+import racegrid.service.TrackRepository;
 import racegrid.service.UserRepository;
 
 import java.util.Arrays;
@@ -61,7 +62,8 @@ public class ApiControllerTest {
     public void setup() {
         UserRepository userRepository = new UserRepository();
         GameRepository gameRepository = new GameRepository(userRepository);
-        Engine tmp = new Engine(userRepository, gameRepository);
+        TrackRepository trackRepository = new TrackRepository(new ObjectMapper());
+        Engine tmp = new Engine(trackRepository, userRepository, gameRepository);
         engine = spy(tmp);
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new ApiController(engine)).build();
         client = new ApiControllerTestClient(mockMvc, objectMapper);

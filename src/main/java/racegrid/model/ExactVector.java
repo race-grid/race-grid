@@ -32,4 +32,18 @@ public class ExactVector {
     public String toString() {
         return "(" + x + "," + y + ")";
     }
+
+    @Override
+    public int hashCode() {
+        return (int) (x * 31 + y);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ExactVector)) {
+            return false;
+        }
+        ExactVector p = (ExactVector) o;
+        return x == p.x && y == p.y;
+    }
 }

@@ -3,27 +3,28 @@ package racegrid.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import racegrid.game.GameBotSettings;
+import racegrid.game.gameRunner.GameRunner;
 import racegrid.game.gameRunner.GameRunnerFactory;
 import racegrid.game.gameRunner.PlayerAi;
-import racegrid.model.Collision;
-import racegrid.model.RaceTrack;
-import racegrid.model.RacegridException;
-import racegrid.game.AsciiBoard;
-import racegrid.game.gameRunner.GameRunner;
 import racegrid.game.gameRunner.SlowGameRunner;
 import racegrid.game.gameRunner.TimebasedGameRunner;
+import racegrid.model.Collision;
 import racegrid.model.GameEntry;
 import racegrid.model.GameSettings;
 import racegrid.model.GameState;
 import racegrid.model.Id;
 import racegrid.model.NewUserResponse;
 import racegrid.model.Player;
+import racegrid.model.RaceTrack;
+import racegrid.model.RacegridException;
 import racegrid.model.User;
 import racegrid.model.UserAuth;
 import racegrid.model.Vector;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,12 +35,19 @@ import java.util.stream.Stream;
 @Service
 public class Engine {
 
+    private final static String TRACK_1_FILE_PATH = "race-track-1.json";
+
+
+    private final TrackRepository trackRepository;
     private final UserRepository userRepository;
     private final GameRepository gameRepository;
     private final HashMap<Id, GameRunner> games = new HashMap<>();
 
     @Autowired
-    public Engine(UserRepository userRepository, GameRepository gameRepository) {
+    public Engine(TrackRepository trackRepository,
+                  UserRepository userRepository,
+                  GameRepository gameRepository) {
+        this.trackRepository = trackRepository;
         this.userRepository = userRepository;
         this.gameRepository = gameRepository;
     }
@@ -58,13 +66,13 @@ public class Engine {
     }
 
     private RaceTrack track() {
-        return new RaceTrack(
-                Collections.emptyList(),
-                10,
-                10,
-                null,
-                Arrays.asList(new Vector(0, 0), new Vector(1, 1), new Vector(2, 2), new Vector(3, 3))
-        ); //TODO
+        try {
+            Path path = Paths.get(getClass().getClassLoader().getResource(TRACK_1_FILE_PATH).getFile());
+            return trackRepository.loadTrackFromFile(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RacegridException("Failed to load track data from file: " + TRACK_1_FILE_PATH);
+        }
     }
 
     private GameBotSettings botSettings(int numBots) {
