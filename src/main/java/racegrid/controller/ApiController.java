@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import racegrid.model.RacegridException;
 import racegrid.Util;
+import racegrid.model.Collision;
 import racegrid.model.GameEntry;
 import racegrid.model.GameSettings;
 import racegrid.model.GameState;
 import racegrid.model.Id;
 import racegrid.model.NewUserResponse;
+import racegrid.model.RacegridException;
 import racegrid.model.User;
 import racegrid.model.UserAuth;
 import racegrid.model.Vector;
@@ -70,8 +71,8 @@ public class ApiController {
     }
 
     @RequestMapping(value = "possible-moves", method = RequestMethod.GET)
-    public Map<String, Optional<Vector>> possibleMoves(@RequestParam Id gameId, @RequestParam Id userId, @RequestParam UUID userHash) {
-        Map<Vector, Optional<Vector>> moves = engine.getValidMovesWithCollisionData(gameId, new UserAuth(userId, userHash));
+    public Map<String, Optional<Collision>> possibleMoves(@RequestParam Id gameId, @RequestParam Id userId, @RequestParam UUID userHash) {
+        Map<Vector, Optional<Collision>> moves = engine.getValidMovesWithCollisionData(gameId, new UserAuth(userId, userHash));
         return Util.mapKeys(moves, Vector::toString);
     }
 

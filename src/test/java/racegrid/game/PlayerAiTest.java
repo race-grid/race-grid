@@ -7,28 +7,28 @@ import racegrid.model.Id;
 import racegrid.model.Player;
 import racegrid.model.Vector;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class PlayerAiTest {
 
     private PlayerAi ai = new PlayerAi();
     private Id ID = Id.of("ID");
     private Player player = new Player("p1", ID);
+    private CollisionHandler collisionHandler;
     private MutableGameBoard board;
 
     @Before
-    public void setup(){
-        List<Vector> blockedPositions = Collections.singletonList(new Vector(1, 0));
-        RaceTrack track = BlockRaceTrack.fromList(blockedPositions);
-        board = new MutableGameBoard(track);
+    public void setup() {
+        collisionHandler = mock(CollisionHandler.class);
+        board = new MutableGameBoard(collisionHandler);
     }
 
     @Test
-    public void getMove(){
+    public void getMove() {
         board.addPlayer(player, new Vector(0, 0));
         List<Vector> validMoves = Collections.singletonList(new Vector(0, 1));
         Vector destination = ai.getNextMove(player.id(), validMoves, board);

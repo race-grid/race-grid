@@ -1,6 +1,7 @@
 package racegrid.game;
 
 import racegrid.Geometry;
+import racegrid.model.Collision;
 import racegrid.model.Id;
 import racegrid.model.RacegridException;
 import racegrid.model.Vector;
@@ -52,15 +53,16 @@ public class Game {
     /**
      * @return valid moves mapping to resulting collision position (if collision)
      */
-    private Map<Vector, Optional<Vector>> getCollisionDataForGivenMoves(Id playerId, List<Vector> moves) {
+    private Map<Vector, Optional<Collision>> getCollisionDataForGivenMoves(Id playerId, List<Vector> moves) {
         Vector from = board.getPlayerCurrentPosition(playerId);
+        CollisionHandler collisionHandler = board.getCollisionHandler();
         return moves.stream().collect(Collectors.toMap(
                 to -> to,
-                to -> board.getTrack().collisionBetween(from, to)
+                to -> collisionHandler.collisionBetween(from, to)
         ));
     }
 
-    private Id nextPlayerId(Id current){
+    private Id nextPlayerId(Id current) {
         List<Id> ids = board.getPlayerIds().collect(Collectors.toList());
         int index = ids.indexOf(current);
         return ids.get((index + 1) % ids.size());
@@ -74,15 +76,15 @@ public class Game {
         return Geometry.withSurrounding(nextPosition);
     }
 
-    public Map<Vector, Optional<Vector>> getValidMovesWithCollisionData(Id playerId){
+    public Map<Vector, Optional<Collision>> getValidMovesWithCollisionData(Id playerId) {
         List<Vector> moves = possibleNextMovesBasedOnVelocity(playerId);
         return getCollisionDataForGivenMoves(playerId, moves);
     }
 
-    private void assertIsValidMove(Id playerId, Vector destination){
+    private void assertIsValidMove(Id playerId, Vector destination) {
         List<Vector> valid = possibleNextMovesBasedOnVelocity(playerId);
         boolean isValid = valid.contains(destination);
-        if(!isValid){
+        if (!isValid) {
             throw new RacegridException("Invalid move by player " + playerId + ": " + destination);
         }
     }

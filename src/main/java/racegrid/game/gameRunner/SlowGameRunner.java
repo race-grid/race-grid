@@ -1,40 +1,20 @@
 package racegrid.game.gameRunner;
 
 import racegrid.game.Game;
-import racegrid.game.MutableGameBoard;
-import racegrid.game.BlockRaceTrack;
 import racegrid.model.GameState;
 import racegrid.model.Id;
-import racegrid.model.Player;
 import racegrid.model.Vector;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class SlowGameRunner extends AbstractGameRunner implements GameRunner {
 
+    private final Map<Id, PlayerAi> bots;
 
-    private SlowGameRunner(Game game, Map<Id, PlayerAi> bots) {
-        super(game, bots);
-    }
-
-    public static SlowGameRunner players(List<Player> players) {
-        MutableGameBoard board = new MutableGameBoard(BlockRaceTrack.empty());
-        for (int i = 0; i < players.size(); i++) {
-            Vector startPosition = new Vector(i, 0);
-            board.addPlayer(players.get(i), startPosition);
-        }
-        Game game = new Game(board, players.get(0).id());
-        return new SlowGameRunner(game, null);
-    }
-
-    public static SlowGameRunner vsAi(Player player, int numOpponents) {
-        Map<Id, PlayerAi> bots = new HashMap<>();
-        MutableGameBoard board = createBotsAndGameboard(player, bots, numOpponents);
-        Game game = new Game(board, player.id());
-        return new SlowGameRunner(game, bots);
+    SlowGameRunner(Game game, Map<Id, PlayerAi> bots) {
+        super(game);
+        this.bots = bots;
     }
 
     @Override

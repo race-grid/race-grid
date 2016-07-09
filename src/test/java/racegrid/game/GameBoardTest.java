@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import racegrid.model.Collision;
+import racegrid.model.CollisionType;
 import racegrid.model.Id;
 import racegrid.model.Player;
 import racegrid.model.RacegridException;
@@ -19,13 +21,13 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class GameBoardTest {
 
-    private RaceTrack track = mock(RaceTrack.class);
+    private CollisionHandler collisionHandler = mock(CollisionHandler.class);
     private MutableGameBoard board;
     private Id ID = Id.of("ID");
 
     @Before
     public void setup(){
-        board = new MutableGameBoard(track);
+        board = new MutableGameBoard(collisionHandler);
     }
 
     @Test
@@ -41,14 +43,14 @@ public class GameBoardTest {
 
     @Test
     public void makeMove(){
-        when(track.collisionBetween(any(), any())).thenReturn(Optional.empty());
+        when(collisionHandler.collisionBetween(any(), any())).thenReturn(Optional.empty());
         board.addPlayer(new Player("p1", ID), new Vector(0, 0));
         board.makeMove(ID, new Vector(1, 0));
     }
 
     @Test
     public void getPreviousPositions(){
-        when(track.collisionBetween(any(), any())).thenReturn(Optional.empty());
+        when(collisionHandler.collisionBetween(any(), any())).thenReturn(Optional.empty());
         board.addPlayer(new Player("p1", ID), new Vector(0, 0));
         board.makeMove(ID, new Vector(1, 0));
         List<Vector> moves = board.getPlayerPositionHistory(ID).collect(Collectors.toList());
@@ -59,12 +61,12 @@ public class GameBoardTest {
 
     @Test
     public void makeMove_shouldSetProperPositionAfterCollision(){
-        Vector collisonPos = new Vector(1, 0);
+        Collision collision = new Collision(null, new Vector(1, 0), CollisionType.WITH_WALL);
         Vector destination = new Vector(2, 0);
-        when(track.collisionBetween(any(), any())).thenReturn(Optional.of(collisonPos));
+        when(collisionHandler.collisionBetween(any(), any())).thenReturn(Optional.of(collision));
         board.addPlayer(new Player("p1", ID), new Vector(0, 0));
         board.makeMove(ID, destination);
-        assertEquals(collisonPos, board.getPlayerCurrentPosition(ID));
+        assertEquals(collision.resultingPosition(), board.getPlayerCurrentPosition(ID));
     }
 
     @Test

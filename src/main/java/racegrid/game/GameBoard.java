@@ -14,12 +14,11 @@ import java.util.stream.Stream;
 
 public class GameBoard {
 
+    protected final HashMap<Id, PlayerGameState> playerStates = new HashMap<>();
+    protected final CollisionHandler collisionHandler;
 
-    final RaceTrack track;
-    final HashMap<Id, PlayerGameState> playerStates = new HashMap<>();
-
-    public GameBoard(RaceTrack track) {
-        this.track = track;
+    public GameBoard(CollisionHandler collisionHandler) {
+        this.collisionHandler = collisionHandler;
     }
 
     void assertHasNoPlayerWithGivenId(Id id) {
@@ -33,10 +32,6 @@ public class GameBoard {
     public Vector getPlayerCurrentPosition(Id playerId) {
         List<Vector> history = playerStates.get(playerId).positionHistory();
         return history.get(history.size() - 1);
-    }
-
-    public RaceTrack getTrack(){
-        return track;
     }
 
     public Stream<Vector> getPlayerPositionHistory(Id playerId) {
@@ -64,11 +59,7 @@ public class GameBoard {
         return positionHistory.get(index);
     }
 
-    public Vector getPlayerPositionNStepsAgo(Id playerId, int n){
-        List<Vector> positionHistory = playerStates.get(playerId).positionHistory();
-        if(n < 0 || n >= positionHistory.size()){
-            throw new IllegalArgumentException("Bad input n: " + n + ", positionHistory.size(): " + positionHistory.size());
-        }
-        return positionHistory.get(positionHistory.size() - 1 - n);
+    public CollisionHandler getCollisionHandler(){
+        return collisionHandler;
     }
 }

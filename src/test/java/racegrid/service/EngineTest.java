@@ -1,6 +1,7 @@
 package racegrid.service;
 
 import org.junit.Test;
+import racegrid.model.Collision;
 import racegrid.model.RacegridException;
 import racegrid.model.GameSettings;
 import racegrid.model.GameState;
@@ -20,7 +21,7 @@ public class EngineTest {
     private final String USER_NAME = "userName";
     private final Id UNKNOWN_ID = Id.of("UNKNOWN_ID");
     private final UUID UNKNOWN_HASH = UUID.randomUUID();
-    GameSettings SETTINGS = new GameSettings(5);
+    private GameSettings SETTINGS = new GameSettings(5);
     private UserRepository userRepository = new UserRepository();
     private GameRepository gameRepository = new GameRepository(userRepository);
     private Engine engine = new Engine(userRepository, gameRepository);
@@ -42,7 +43,7 @@ public class EngineTest {
         UserAuth auth = authFromNewUser(response);
 
         Id gameId = engine.newTimedGameVsAi(auth, 1, SETTINGS);
-        Map<Vector, Optional<Vector>> validMoves = engine.getValidMovesWithCollisionData(gameId, auth);
+        Map<Vector, Optional<Collision>> validMoves = engine.getValidMovesWithCollisionData(gameId, auth);
         assertEquals(9, validMoves.size());
     }
 
@@ -85,5 +86,14 @@ public class EngineTest {
 
     private UserAuth authFromNewUser(NewUserResponse response) {
         return new UserAuth(response.getUser().id(), response.getUserHash());
+    }
+
+    public void test() {
+        NewUserResponse response = engine.newUser("jnoathan");
+
+        UserAuth auth = new UserAuth(response.getUser().id(), response.getUserHash());
+        Id gameId = engine.newSlowGameVsAi(auth, 2);
+        GameState gameState = engine.getGameState(gameId);
+        engine.getValidMovesWithCollisionData(gameId, auth);
     }
 }

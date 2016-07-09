@@ -2,6 +2,11 @@ package racegrid.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import racegrid.game.GameBotSettings;
+import racegrid.game.gameRunner.GameRunnerFactory;
+import racegrid.game.gameRunner.PlayerAi;
+import racegrid.model.Collision;
+import racegrid.model.RaceTrack;
 import racegrid.model.RacegridException;
 import racegrid.game.AsciiBoard;
 import racegrid.game.gameRunner.GameRunner;
@@ -17,8 +22,11 @@ import racegrid.model.User;
 import racegrid.model.UserAuth;
 import racegrid.model.Vector;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -44,16 +52,35 @@ public class Engine {
         User user = assertUserExistsAndAuthorized(auth);
         GameEntry game = gameRepository.newGame(Collections.singletonList(user));
         Player player = new Player(user.name(), user.id());
-        TimebasedGameRunner gameRunner = TimebasedGameRunner.vsAi(player, numOpponents, settings);
+        TimebasedGameRunner gameRunner = GameRunnerFactory.timeBasedVsAi(track(), player, botSettings(numOpponents), settings);
         games.put(game.id(), gameRunner);
         return game.id();
     }
 
-    public Id newSlowGameVsAi(UserAuth auth, int numOpponents){
+    private RaceTrack track() {
+        return new RaceTrack(
+                Collections.emptyList(),
+                10,
+                10,
+                null,
+                Arrays.asList(new Vector(0, 0), new Vector(1, 1), new Vector(2, 2), new Vector(3, 3))
+        ); //TODO
+    }
+
+    private GameBotSettings botSettings(int numBots) {
+        List<String> botNames = new ArrayList<>();
+        for (int i = 0; i < numBots; i++) {
+            botNames.add("BOT-" + (i + 1));
+        }
+        return new GameBotSettings(botNames, new PlayerAi());
+    }
+
+
+    public Id newSlowGameVsAi(UserAuth auth, int numOpponents) {
         User user = assertUserExistsAndAuthorized(auth);
         GameEntry game = gameRepository.newGame(Collections.singletonList(user));
         Player player = new Player(user.name(), user.id());
-        SlowGameRunner gameRunner = SlowGameRunner.vsAi(player, numOpponents);
+        SlowGameRunner gameRunner = GameRunnerFactory.slowVsAi(track(), player, botSettings(numOpponents));
         games.put(game.id(), gameRunner);
         return game.id();
     }
@@ -88,17 +115,15 @@ public class Engine {
     public GameState userMakeMove(Id gameId, UserAuth auth, Vector destination) {
         assertUserExistsAndAuthorized(auth);
         GameRunner game = assertGameExists(gameId);
-        GameState state = game.userMakeMove(auth.id(), destination);
-        printAsciiBoard(game); //TODO
-        return state;
+        return game.userMakeMove(auth.id(), destination);
     }
 
-    private void printAsciiBoard(GameRunner game){
+    private void printAsciiBoard(GameRunner game) {
         String ascii = AsciiBoard.boardToString(game.getBoard());
         System.out.println(ascii);
     }
 
-    public Map<Vector, Optional<Vector>> getValidMovesWithCollisionData(Id gameId, UserAuth auth) {
+    public Map<Vector, Optional<Collision>> getValidMovesWithCollisionData(Id gameId, UserAuth auth) {
         User user = assertUserExistsAndAuthorized(auth);
         GameRunner game = assertGameExists(gameId);
         return game.getValidMovesWithCollisionData(user.id());

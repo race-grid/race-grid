@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Vector {
 
     private final int x;
-
     private final int y;
 
     @JsonCreator
