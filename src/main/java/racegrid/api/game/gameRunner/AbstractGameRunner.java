@@ -21,12 +21,6 @@ public class AbstractGameRunner {
         return game.getValidMovesWithCollisionData(playerId);
     }
 
-    protected static void assertEnoughStartPositions(RaceTrack track, int minNumber) {
-        if (track.startPositions().size() < minNumber) {
-            throw new IllegalArgumentException("Track has less than " + minNumber + " start positions: " + track);
-        }
-    }
-
     public GameBoard getBoard() {
         return game.getBoard();
     }

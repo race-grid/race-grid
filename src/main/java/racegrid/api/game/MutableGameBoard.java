@@ -38,5 +38,4 @@ public class MutableGameBoard extends GameBoard {
             state.setHasFinished();
         }
     }
-
 }
