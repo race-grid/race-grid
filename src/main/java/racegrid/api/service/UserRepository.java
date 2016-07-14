@@ -46,7 +46,7 @@ public class UserRepository {
         return users.stream();
     }
 
-    public boolean authorizeUser(UserAuth auth) {
+    public boolean authenticateUser(UserAuth auth) {
 
         if(false){
             return true; //TODO

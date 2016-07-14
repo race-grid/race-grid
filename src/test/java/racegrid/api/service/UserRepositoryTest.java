@@ -80,14 +80,14 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void authorizeUser() {
+    public void authenticateUser() {
         NewUserResponse response = service.newUser(NAME);
-        assertTrue(service.authorizeUser(new UserAuth(response.getUser().id(), response.getUserHash())));
+        assertTrue(service.authenticateUser(new UserAuth(response.getUser().id(), response.getUserHash())));
     }
 
     @Test
-    public void authorizeUser_shouldEnforceCorrectHash() {
+    public void authenticateUser_shouldEnforceCorrectHash() {
         UUID userHash = service.newUser(NAME).getUserHash();
-        assertFalse(service.authorizeUser(new UserAuth(Id.of("BAD_ID"), userHash)));
+        assertFalse(service.authenticateUser(new UserAuth(Id.of("BAD_ID"), userHash)));
     }
 }

@@ -10,7 +10,6 @@ import racegrid.api.game.gameRunner.SlowGameRunner;
 import racegrid.api.game.gameRunner.TimebasedGameRunner;
 import racegrid.api.model.*;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class Engine {
     }
 
     public Id newTimedGameVsAi(UserAuth auth, int numOpponents, GameSettings settings) {
-        User user = assertUserExistsAndAuthorized(auth);
+        User user = assertUserExistsAndAuthenticated(auth);
         GameEntry game = gameRepository.newGame(Collections.singletonList(user));
         Player player = new Player(user.name(), user.id());
         TimebasedGameRunner gameRunner = GameRunnerFactory.timeBasedVsAi(track(), player, botSettings(numOpponents), settings);
@@ -69,7 +68,7 @@ public class Engine {
 
 
     public Id newSlowGameVsAi(UserAuth auth, int numOpponents) {
-        User user = assertUserExistsAndAuthorized(auth);
+        User user = assertUserExistsAndAuthenticated(auth);
         GameEntry game = gameRepository.newGame(Collections.singletonList(user));
         Player player = new Player(user.name(), user.id());
         SlowGameRunner gameRunner = GameRunnerFactory.slowVsAi(track(), player, botSettings(numOpponents));
@@ -86,11 +85,11 @@ public class Engine {
         }
     }
 
-    private User assertUserExistsAndAuthorized(UserAuth auth) {
+    private User assertUserExistsAndAuthenticated(UserAuth auth) {
         User user = userRepository.userById(auth.id())
                 .orElseThrow(() -> new RacegridException(RacegridError.USER_NOT_FOUND, "User with id " + auth.id() + " not found"));
-        boolean authorized = userRepository.authorizeUser(auth);
-        if (!authorized) {
+        boolean authenticated = userRepository.authenticateUser(auth);
+        if (!authenticated) {
             throw new RacegridException(RacegridError.AUTHENTICATION_ERROR, "Authentication error!");
         }
         return user;
@@ -105,13 +104,13 @@ public class Engine {
     }
 
     public GameState userMakeMove(Id gameId, UserAuth auth, Vector destination) {
-        assertUserExistsAndAuthorized(auth);
+        assertUserExistsAndAuthenticated(auth);
         GameRunner game = assertGameExists(gameId);
         return game.userMakeMove(auth.id(), destination);
     }
 
     public Map<Vector, Optional<Collision>> getValidMovesWithCollisionData(Id gameId, UserAuth auth) {
-        User user = assertUserExistsAndAuthorized(auth);
+        User user = assertUserExistsAndAuthenticated(auth);
         GameRunner game = assertGameExists(gameId);
         return game.getValidMovesWithCollisionData(user.id());
     }
