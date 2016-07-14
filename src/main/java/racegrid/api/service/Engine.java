@@ -8,18 +8,7 @@ import racegrid.api.game.gameRunner.GameRunnerFactory;
 import racegrid.api.game.gameRunner.PlayerAi;
 import racegrid.api.game.gameRunner.SlowGameRunner;
 import racegrid.api.game.gameRunner.TimebasedGameRunner;
-import racegrid.api.model.Collision;
-import racegrid.api.model.GameEntry;
-import racegrid.api.model.GameSettings;
-import racegrid.api.model.GameState;
-import racegrid.api.model.Id;
-import racegrid.api.model.NewUserResponse;
-import racegrid.api.model.Player;
-import racegrid.api.model.RaceTrack;
-import racegrid.api.model.RacegridException;
-import racegrid.api.model.User;
-import racegrid.api.model.UserAuth;
-import racegrid.api.model.Vector;
+import racegrid.api.model.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -66,13 +55,8 @@ public class Engine {
     }
 
     private RaceTrack track() {
-        try {
-            Path path = Paths.get(getClass().getClassLoader().getResource(TRACK_1_FILE_PATH).getFile());
-            return trackRepository.loadTrackFromFile(path);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RacegridException("Failed to load track data from file: " + TRACK_1_FILE_PATH);
-        }
+        Path path = Paths.get(getClass().getClassLoader().getResource(TRACK_1_FILE_PATH).getFile());
+        return trackRepository.loadTrackFromFile(path);
     }
 
     private GameBotSettings botSettings(int numBots) {
@@ -98,16 +82,16 @@ public class Engine {
         if (game instanceof TimebasedGameRunner) {
             ((TimebasedGameRunner) game).startGame();
         } else {
-            throw new RacegridException("This game is not time-based and cannot be 'started'");
+            throw new RacegridException(RacegridError.CAN_NOT_START_GAME, "This game is not time-based and cannot be 'started'");
         }
     }
 
     private User assertUserExistsAndAuthorized(UserAuth auth) {
         User user = userRepository.userById(auth.id())
-                .orElseThrow(() -> new RacegridException("User with id " + auth.id() + " not found"));
+                .orElseThrow(() -> new RacegridException(RacegridError.USER_NOT_FOUND, "User with id " + auth.id() + " not found"));
         boolean authorized = userRepository.authorizeUser(auth);
         if (!authorized) {
-            throw new RacegridException("User not authorized!");
+            throw new RacegridException(RacegridError.AUTHENTICATION_ERROR, "Authentication error!");
         }
         return user;
     }
@@ -139,7 +123,7 @@ public class Engine {
 
     private GameRunner assertGameExists(Id gameId) {
         if (!gameRepository.gameById(gameId).isPresent()) {
-            throw new RacegridException("No game with id " + gameId);
+            throw new RacegridException(RacegridError.GAME_NOT_FOUND, "No game with id " + gameId);
         }
         return games.get(gameId);
     }

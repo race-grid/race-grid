@@ -1,11 +1,7 @@
 package racegrid.api.game.gameRunner;
 
 import racegrid.api.game.Game;
-import racegrid.api.model.GameSettings;
-import racegrid.api.model.GameState;
-import racegrid.api.model.Id;
-import racegrid.api.model.RacegridException;
-import racegrid.api.model.Vector;
+import racegrid.api.model.*;
 
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +54,7 @@ public class TimebasedGameRunner extends AbstractGameRunner implements GameRunne
 
     private void assertGameStarted() {
         if (!timer.hasGameStarted()) {
-            throw new RacegridException("Game has not started!");
+            throw new RacegridException(RacegridError.GAME_NOT_RUNNING, "Game has not started!");
         }
     }
 

@@ -1,10 +1,7 @@
 package racegrid.api.game;
 
 import racegrid.api.Geometry;
-import racegrid.api.model.Collision;
-import racegrid.api.model.Id;
-import racegrid.api.model.RacegridException;
-import racegrid.api.model.Vector;
+import racegrid.api.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -46,7 +43,7 @@ public class Game {
 
     private void assertPlayersTurn(Id playerId) {
         if (!activePlayerId.equals(playerId)) {
-            throw new RacegridException("Not player's turn. Cannot make a move!");
+            throw new RacegridException(RacegridError.NOT_PLAYERS_TURN, "Not player's turn. Cannot make a move!");
         }
     }
 
@@ -85,7 +82,7 @@ public class Game {
         List<Vector> valid = possibleNextMovesBasedOnVelocity(playerId);
         boolean isValid = valid.contains(destination);
         if (!isValid) {
-            throw new RacegridException("Invalid move by player " + playerId + ": " + destination);
+            throw new RacegridException(RacegridError.INVALID_MOVE, "Invalid move by player " + playerId + ": " + destination);
         }
     }
 

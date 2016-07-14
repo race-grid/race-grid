@@ -1,10 +1,6 @@
 package racegrid.api.game;
 
-import racegrid.api.model.Collision;
-import racegrid.api.model.Id;
-import racegrid.api.model.Player;
-import racegrid.api.model.PlayerGameState;
-import racegrid.api.model.Vector;
+import racegrid.api.model.*;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -36,6 +32,14 @@ public class MutableGameBoard extends GameBoard {
         boolean playerPassedGoalLine = collisionHandler.passingGoalLine(from, actualNewPos);
         if(playerPassedGoalLine){
             state.setHasFinished();
+        }
+    }
+
+    private void assertHasNoPlayerWithGivenId(Id id) {
+        boolean somePlayerHasId = playerStates.keySet().stream()
+                .anyMatch(existingId -> existingId.equals(id));
+        if (somePlayerHasId) {
+            throw new RacegridException(RacegridError.INTERNAL, "Already has player with id: " + id);
         }
     }
 }

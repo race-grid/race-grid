@@ -92,6 +92,7 @@ public class ApiController {
         ErrorResponse response = new ErrorResponse();
         response.setUrl(url);
         response.setMessage(msg);
+        response.setError(exception.getError());
         System.err.println(msg + " (" + url + ")");
         return response;
     }

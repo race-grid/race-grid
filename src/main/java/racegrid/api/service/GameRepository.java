@@ -2,10 +2,7 @@ package racegrid.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import racegrid.api.model.RacegridException;
-import racegrid.api.model.GameEntry;
-import racegrid.api.model.Id;
-import racegrid.api.model.User;
+import racegrid.api.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +31,14 @@ public class GameRepository {
     private void assertNoUsersAreInGame(List<User> users) {
         boolean isSomeUserAlreadyInGame = users.stream().anyMatch(this::isUserInGame);
         if (isSomeUserAlreadyInGame) {
-            throw new RacegridException("User is already in a game!");
+            throw new RacegridException(RacegridError.USER_IN_GAME, "User is already in a game!");
         }
     }
 
     private void assertUsersExist(List<User> users) {
         users.forEach(p -> {
             if (!userRepository.getUsers().anyMatch(p2 -> p2.equals(p))) {
-                throw new RacegridException("User doesn't exist: " + p);
+                throw new RacegridException(RacegridError.USER_NOT_FOUND, "User doesn't exist: " + p);
             }
         });
     }

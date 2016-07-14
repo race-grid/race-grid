@@ -1,7 +1,10 @@
 package racegrid.api.controller;
 
+import racegrid.api.model.RacegridError;
+
 public class ErrorResponse {
     private String message;
+    private RacegridError error;
     private Throwable throwable;
     private String url;
 
@@ -11,6 +14,14 @@ public class ErrorResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public RacegridError getError() {
+        return error;
+    }
+
+    public void setError(RacegridError error) {
+        this.error = error;
     }
 
     public Throwable getThrowable() {

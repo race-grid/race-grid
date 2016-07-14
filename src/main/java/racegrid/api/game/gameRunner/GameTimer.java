@@ -1,5 +1,6 @@
 package racegrid.api.game.gameRunner;
 
+import racegrid.api.model.RacegridError;
 import racegrid.api.model.RacegridException;
 
 public class GameTimer {
@@ -28,7 +29,7 @@ public class GameTimer {
 
     public void startGame() {
         if(gameHasStarted) {
-            throw new RacegridException("Can't start game twice!");
+            throw new RacegridException(RacegridError.GAME_ALREADY_RUNNING, "Can't start game twice!");
         }
         gameHasStarted = true;
         startCountdown();

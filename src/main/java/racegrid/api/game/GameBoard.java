@@ -21,14 +21,6 @@ public class GameBoard {
         this.collisionHandler = collisionHandler;
     }
 
-    void assertHasNoPlayerWithGivenId(Id id) {
-        boolean somePlayerHasId = playerStates.keySet().stream()
-                .anyMatch(existingId -> existingId.equals(id));
-        if (somePlayerHasId) {
-            throw new RacegridException("Already has player with id: " + id);
-        }
-    }
-
     public Vector getPlayerCurrentPosition(Id playerId) {
         List<Vector> history = playerStates.get(playerId).positionHistory();
         return history.get(history.size() - 1);
