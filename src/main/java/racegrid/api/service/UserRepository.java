@@ -1,18 +1,14 @@
 package racegrid.api.service;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import racegrid.api.model.Id;
 import racegrid.api.model.NewUserResponse;
 import racegrid.api.model.User;
 import racegrid.api.model.UserAuth;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
@@ -21,8 +17,15 @@ public class UserRepository {
     private static final int MIN_NAME_LENGTH = 1;
     private static final int MAX_NAME_LENGTH = 30;
 
+    private final RacegridProps props;
+
     private Map<Id, UUID> hashes = new HashMap<>();
     private List<User> users = new ArrayList<>();
+
+    @Autowired
+    public UserRepository(RacegridProps props) {
+        this.props = props;
+    }
 
     public NewUserResponse newUser(String name) {
         if (!isValidName(name)) {
@@ -48,8 +51,8 @@ public class UserRepository {
 
     public boolean authenticateUser(UserAuth auth) {
 
-        if(false){
-            return true; //TODO
+        if (props.isSkipAuth()) {
+            return true;
         }
 
         return hashes.containsKey(auth.id())

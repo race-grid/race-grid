@@ -27,7 +27,8 @@ public class UserRepositoryTest {
 
     @Before
     public void setup() {
-        service = new UserRepository();
+        RacegridProps props = new RacegridProps();
+        service = new UserRepository(props);
     }
 
     @Test

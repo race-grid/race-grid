@@ -1,6 +1,7 @@
 package racegrid.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Before;
 import org.junit.Test;
 import racegrid.api.model.Collision;
 import racegrid.api.model.RacegridException;
@@ -23,10 +24,16 @@ public class EngineTest {
     private final Id UNKNOWN_ID = Id.of("UNKNOWN_ID");
     private final UUID UNKNOWN_HASH = UUID.randomUUID();
     private GameSettings SETTINGS = new GameSettings(5);
-    private TrackRepository trackRepository = new TrackRepository(new ObjectMapper());
-    private UserRepository userRepository = new UserRepository();
-    private GameRepository gameRepository = new GameRepository(userRepository);
-    private Engine engine = new Engine(trackRepository, userRepository, gameRepository);
+    private Engine engine;
+
+    @Before
+    public void setup() {
+        TrackRepository trackRepository = new TrackRepository(new ObjectMapper());
+        RacegridProps props = new RacegridProps();
+        UserRepository userRepository = new UserRepository(props);
+        GameRepository gameRepository = new GameRepository(userRepository);
+        engine = new Engine(trackRepository, userRepository, gameRepository);
+    }
 
     @Test(expected = RacegridException.class)
     public void getValidMovesWithCollisionData_shouldThrowForUnknownUser() {
@@ -88,14 +95,5 @@ public class EngineTest {
 
     private UserAuth authFromNewUser(NewUserResponse response) {
         return new UserAuth(response.getUser().id(), response.getUserHash());
-    }
-
-    public void test() {
-        NewUserResponse response = engine.newUser("jnoathan");
-
-        UserAuth auth = new UserAuth(response.getUser().id(), response.getUserHash());
-        Id gameId = engine.newSlowGameVsAi(auth, 2);
-        GameState gameState = engine.getGameState(gameId);
-        engine.getValidMovesWithCollisionData(gameId, auth);
     }
 }

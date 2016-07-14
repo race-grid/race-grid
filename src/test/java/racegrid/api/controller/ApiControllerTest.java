@@ -20,10 +20,7 @@ import racegrid.api.model.Player;
 import racegrid.api.model.PlayerGameState;
 import racegrid.api.model.User;
 import racegrid.api.model.Vector;
-import racegrid.api.service.GameRepository;
-import racegrid.api.service.Engine;
-import racegrid.api.service.TrackRepository;
-import racegrid.api.service.UserRepository;
+import racegrid.api.service.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,7 +57,8 @@ public class ApiControllerTest {
 
     @Before
     public void setup() {
-        UserRepository userRepository = new UserRepository();
+        RacegridProps props = new RacegridProps();
+        UserRepository userRepository = new UserRepository(props);
         GameRepository gameRepository = new GameRepository(userRepository);
         TrackRepository trackRepository = new TrackRepository(new ObjectMapper());
         Engine tmp = new Engine(trackRepository, userRepository, gameRepository);

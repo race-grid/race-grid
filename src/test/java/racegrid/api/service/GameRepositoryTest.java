@@ -22,7 +22,8 @@ public class GameRepositoryTest extends TestCase {
 
     @Before
     public void setup() {
-        userRepository = new UserRepository();
+        RacegridProps props = new RacegridProps();
+        userRepository = new UserRepository(props);
         gameRepository = new GameRepository(userRepository);
     }
 
