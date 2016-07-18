@@ -11,5 +11,5 @@ public enum RacegridError {
     GAME_NOT_RUNNING,
     AUTHENTICATION_ERROR,
     CAN_NOT_START_GAME,
-
+    LOBBY_NOT_FOUND,
 }
