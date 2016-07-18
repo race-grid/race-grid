@@ -1,6 +1,5 @@
 package racegrid.api.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import racegrid.api.model.Id;
 import racegrid.api.model.RacegridError;
@@ -16,25 +15,16 @@ import java.util.stream.Stream;
 @Service
 public class LobbyRepository {
 
-    private final UserRepository userRepository;
     private List<Lobby> lobbies = new ArrayList<>();
 
-    @Autowired
-    public LobbyRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public Id createLobby(Id hostId) {
-        User host = assertUserExists(hostId);
+    public Id createLobby(User host) {
         Id lobbyId = Id.generateUnique();
         Lobby newLobby = new Lobby(lobbyId, host);
         lobbies.add(newLobby);
         return lobbyId;
     }
 
-    public void inviteToLobby(Id userId, Id invitedId) {
-        assertUserExists(userId);
-        User invited = assertUserExists(invitedId);
+    public void inviteToLobby(Id userId, User invited) {
         Lobby lobby = lobbyHostedBy(userId);
         lobby.addPendingInvite(invited);
     }
@@ -46,57 +36,49 @@ public class LobbyRepository {
                 .orElseThrow(() -> new RacegridException(RacegridError.LOBBY_NOT_FOUND, "User is not host of a lobby"));
     }
 
-    private User assertUserExists(Id userId) {
-        Optional<User> user = userRepository.userById(userId);
-        return user.orElseThrow(() ->
-                new RacegridException(RacegridError.USER_NOT_FOUND, "That user doesn't exist: " + userId)
-        );
-    }
-
     public Stream<Lobby> getLobbies() {
         return lobbies.stream();
     }
 
-    public void acceptInvite(Id invitedId) {
-        User invited = assertUserExists(invitedId);
-        Lobby lobby = lobbyWithInvited(invitedId);
+    public Lobby lobbyById(Id lobbyId) {
+        return lobbies.stream()
+                .filter(l -> l.getId().equals(lobbyId))
+                .findAny()
+                .orElseThrow(() -> new RacegridException(RacegridError.LOBBY_NOT_FOUND, "No lobby with id: " + lobbyId));
+    }
+
+    public void acceptInvite(User invited) {
+        Lobby lobby = lobbyWithInvited(invited.id());
         lobby.acceptInvite(invited);
     }
 
     private Lobby lobbyWithInvited(Id invitedId) {
         Optional<Lobby> lobby = lobbies.stream()
-                .filter(l -> l.getPendingInvites().anyMatch(u -> u.id().equals(invitedId)))
+                .filter(l -> l.hasPendingInvite(invitedId))
                 .findAny();
         return lobby.orElseThrow(() ->
                 new RacegridException(RacegridError.LOBBY_NOT_FOUND, "User is not invited to any lobby: " + invitedId));
     }
 
     public void declineInvite(Id invitedId) {
-        assertUserExists(invitedId);
         Lobby lobby = lobbyWithInvited(invitedId);
         lobby.removePendingInvite(invitedId);
     }
 
     public void undoInvite(Id userId, Id invitedId) {
-        assertUserExists(userId);
-        assertUserExists(invitedId);
         Lobby lobby = lobbyHostedBy(userId);
         lobby.removePendingInvite(invitedId);
     }
 
-    public void kickPlayer(Id userId, Id otherUserId) {
-        assertUserExists(userId);
-        assertUserExists(otherUserId);
+    public void kickUser(Id userId, Id otherUserId) {
         Lobby lobby = lobbyHostedBy(userId);
         lobby.removeUser(otherUserId);
     }
 
     public void leaveLobby(Id userId) {
-        assertUserExists(userId);
         Lobby lobby = lobbyWithMember(userId);
         lobby.removeUser(userId);
-        boolean anyUserLeft = lobby.getUsers().findAny().isPresent();
-        if (!anyUserLeft) {
+        if (lobby.isEmpty()) {
             lobbies.remove(lobby);
         }
     }

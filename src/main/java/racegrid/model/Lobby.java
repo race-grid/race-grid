@@ -1,5 +1,6 @@
 package racegrid.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import racegrid.api.model.Id;
 import racegrid.api.model.RacegridError;
 import racegrid.api.model.RacegridException;
@@ -8,7 +9,6 @@ import racegrid.api.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class Lobby {
 
@@ -31,16 +31,25 @@ public class Lobby {
         return host;
     }
 
-    public Stream<User> getPendingInvites() {
-        return pendingInvites.stream();
+    public List<User> getPendingInvites() {
+        return new ArrayList<>(pendingInvites);
     }
 
-    public void removePendingInvite(Id invitedId){
+    public List<User> getUsers() {
+        return new ArrayList<>(users);
+    }
+
+    @JsonIgnore
+    public boolean isEmpty() {
+        return users.isEmpty();
+    }
+
+    public void removePendingInvite(Id invitedId) {
         assertPendingInvite(invitedId);
         pendingInvites.removeIf(u -> u.id().equals(invitedId));
     }
 
-    public void acceptInvite(User invited){
+    public void acceptInvite(User invited) {
         removePendingInvite(invited.id());
         addUser(invited);
     }
@@ -56,7 +65,7 @@ public class Lobby {
         pendingInvites.add(invited);
     }
 
-    private boolean hasPendingInvite(Id invitedId) {
+    public boolean hasPendingInvite(Id invitedId) {
         return pendingInvites.stream()
                 .anyMatch(u -> u.id().equals(invitedId));
     }
@@ -64,10 +73,6 @@ public class Lobby {
     public boolean hasUser(Id userId) {
         return users.stream()
                 .anyMatch(u -> u.id().equals(userId));
-    }
-
-    public Stream<User> getUsers() {
-        return users.stream();
     }
 
     private void assertNoPendingInvite(Id userId) {

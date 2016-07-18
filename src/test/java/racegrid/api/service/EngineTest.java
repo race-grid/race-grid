@@ -24,6 +24,7 @@ public class EngineTest {
     private final Id UNKNOWN_ID = Id.of("UNKNOWN_ID");
     private final UUID UNKNOWN_HASH = UUID.randomUUID();
     private GameSettings SETTINGS = new GameSettings(5);
+    private final UserAuth UNKNOWN_AUTH = new UserAuth(UNKNOWN_ID, UNKNOWN_HASH);
     private Engine engine;
 
     @Before
@@ -31,8 +32,9 @@ public class EngineTest {
         TrackRepository trackRepository = new TrackRepository(new ObjectMapper());
         RacegridProps props = new RacegridProps();
         UserRepository userRepository = new UserRepository(props);
-        GameRepository gameRepository = new GameRepository(userRepository);
-        engine = new Engine(trackRepository, userRepository, gameRepository);
+        GameRepository gameRepository = new GameRepository();
+        LobbyRepository lobbyRepository = new LobbyRepository();
+        engine = new Engine(trackRepository, userRepository, gameRepository, lobbyRepository);
     }
 
     @Test(expected = RacegridException.class)
@@ -91,6 +93,41 @@ public class EngineTest {
         engine.startTimedGame(gameId);
         GameState state = engine.userMakeMove(gameId, auth, new Vector(10, 5));
         assertNotNull(state);
+    }
+
+    @Test(expected = RacegridException.class)
+    public void createLobby_shouldThrowForUnknownUser() {
+        engine.createLobby(UNKNOWN_AUTH);
+    }
+
+    @Test(expected = RacegridException.class)
+    public void inviteToLobby_shouldThrowForUnknownUser() {
+        engine.inviteToLobby(UNKNOWN_AUTH, Id.of("OTHER UNKNOWN"));
+    }
+
+    @Test(expected = RacegridException.class)
+    public void acceptInvite_shouldThrowForUnknownUser() {
+        engine.acceptInvite(UNKNOWN_AUTH);
+    }
+
+    @Test(expected = RacegridException.class)
+    public void declineInvite_shouldThrowForUnknownUser() {
+        engine.declineInvite(UNKNOWN_AUTH);
+    }
+
+    @Test(expected = RacegridException.class)
+    public void undoInvite_shouldThrowForUnknownUser() {
+        engine.undoInvite(UNKNOWN_AUTH, Id.of("OTHER UNKNOWN"));
+    }
+
+    @Test(expected = RacegridException.class)
+    public void kickFromLobby_shouldThrowForUnknownUser() {
+        engine.kickFromLobby(UNKNOWN_AUTH, Id.of("OTHER UNKNOWN"));
+    }
+
+    @Test(expected = RacegridException.class)
+    public void leaveLobby_shouldThrowForUnknownUser() {
+        engine.leaveLobby(UNKNOWN_AUTH);
     }
 
     private UserAuth authFromNewUser(NewUserResponse response) {

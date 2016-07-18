@@ -92,7 +92,8 @@ public class ApiControllerTestClient {
                 "&userId=" + userId +
                 "&userHash=" + userHash);
         TypeReference<HashMap<String, Optional<Vector>>> type =
-                new TypeReference<HashMap<String, Optional<Vector>>>() {};
+                new TypeReference<HashMap<String, Optional<Vector>>>() {
+                };
         return callAndParse(request, type);
     }
 
@@ -128,5 +129,17 @@ public class ApiControllerTestClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Id createLobby(Id userId, UUID userHash) {
+        MockHttpServletRequestBuilder request = post(API_PATH + "/create-lobby?userId=" + userId + "&userHash=" + userHash);
+        Id lobbyId = callAndParse(request, Id.class);
+        return lobbyId;
+    }
+
+    public void inviteToLobby(Id userId, UUID userHash, Id otherUserId) {
+        MockHttpServletRequestBuilder request = post(API_PATH + "/invite-to-lobby?userId=" + userId +
+                "&userHash=" + userHash + "&otherUserId=" + otherUserId);
+        callAndParse(request, Void.class);
     }
 }

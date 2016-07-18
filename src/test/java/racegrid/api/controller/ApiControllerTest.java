@@ -20,7 +20,12 @@ import racegrid.api.model.Player;
 import racegrid.api.model.PlayerGameState;
 import racegrid.api.model.User;
 import racegrid.api.model.Vector;
-import racegrid.api.service.*;
+import racegrid.api.service.Engine;
+import racegrid.api.service.GameRepository;
+import racegrid.api.service.LobbyRepository;
+import racegrid.api.service.RacegridProps;
+import racegrid.api.service.TrackRepository;
+import racegrid.api.service.UserRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,9 +64,10 @@ public class ApiControllerTest {
     public void setup() {
         RacegridProps props = new RacegridProps();
         UserRepository userRepository = new UserRepository(props);
-        GameRepository gameRepository = new GameRepository(userRepository);
+        GameRepository gameRepository = new GameRepository();
         TrackRepository trackRepository = new TrackRepository(new ObjectMapper());
-        Engine tmp = new Engine(trackRepository, userRepository, gameRepository);
+        LobbyRepository lobbyRepository = new LobbyRepository();
+        Engine tmp = new Engine(trackRepository, userRepository, gameRepository, lobbyRepository);
         engine = spy(tmp);
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new ApiController(engine)).build();
         client = new ApiControllerTestClient(mockMvc, objectMapper);
@@ -133,6 +139,26 @@ public class ApiControllerTest {
 
         assertNotNull(state);
         verify(engine).userMakeMove(eq(gameId), any(), eq(destination));
+    }
+
+    @Test
+    public void createLobby() {
+        NewUserResponse response = client.newUser(NAME);
+        UUID userHash = response.getUserHash();
+        Id userId = response.getUser().id();
+
+        Id lobbyId = client.createLobby(userId, userHash);
+        assertNotNull(lobbyId);
+    }
+
+    @Test
+    public void inviteToLobby() {
+        NewUserResponse response = client.newUser(NAME);
+        UUID hostHash = response.getUserHash();
+        Id hostId = response.getUser().id();
+        NewUserResponse response2 = client.newUser(NAME_2);
+        client.createLobby(hostId, hostHash);
+        client.inviteToLobby(hostId, hostHash, response2.getUser().id());
     }
 
 

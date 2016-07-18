@@ -1,13 +1,7 @@
 package racegrid.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import racegrid.api.Util;
 import racegrid.api.model.Collision;
 import racegrid.api.model.GameEntry;
@@ -20,6 +14,7 @@ import racegrid.api.model.User;
 import racegrid.api.model.UserAuth;
 import racegrid.api.model.Vector;
 import racegrid.api.service.Engine;
+import racegrid.model.Lobby;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -56,6 +51,27 @@ public class ApiController {
         return engine.getUsers()
                 .map(User::name)
                 .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "lobbies/{lobbyId}", method = RequestMethod.GET)
+    public Lobby getLobby(@PathVariable Id lobbyId) {
+        return engine.lobbyById(lobbyId);
+    }
+
+    @RequestMapping(value = "lobbies", method = RequestMethod.GET)
+    public List<Lobby> getLobbies() {
+        return engine.getLobbies()
+                .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "create-lobby", method = RequestMethod.POST)
+    public Id createLobby(@RequestParam Id userId, @RequestParam UUID userHash) {
+        return engine.createLobby(new UserAuth(userId, userHash));
+    }
+
+    @RequestMapping(value = "invite-to-lobby", method = RequestMethod.POST)
+    public void inviteToLobby(@RequestParam Id userId, @RequestParam UUID userHash, @RequestParam Id otherUserId){
+        engine.inviteToLobby(new UserAuth(userId, userHash), otherUserId);
     }
 
     @RequestMapping(value = "new-game-vs-ai", method = RequestMethod.POST)

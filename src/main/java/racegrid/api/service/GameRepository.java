@@ -1,8 +1,11 @@
 package racegrid.api.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import racegrid.api.model.*;
+import racegrid.api.model.GameEntry;
+import racegrid.api.model.Id;
+import racegrid.api.model.RacegridError;
+import racegrid.api.model.RacegridException;
+import racegrid.api.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +15,8 @@ import java.util.stream.Stream;
 @Service
 public class GameRepository {
     private List<GameEntry> games = new ArrayList<>();
-    private final UserRepository userRepository;
-
-    @Autowired
-    public GameRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public GameEntry newGame(List<User> users) {
-        assertUsersExist(users);
         assertNoUsersAreInGame(users);
         Id id = Id.generateUnique();
         GameEntry newGame = new GameEntry(id, users);
@@ -29,23 +25,16 @@ public class GameRepository {
     }
 
     private void assertNoUsersAreInGame(List<User> users) {
-        boolean isSomeUserAlreadyInGame = users.stream().anyMatch(this::isUserInGame);
+        boolean isSomeUserAlreadyInGame = users.stream().anyMatch(u -> isUserInGame(u.id()));
         if (isSomeUserAlreadyInGame) {
             throw new RacegridException(RacegridError.USER_IN_GAME, "User is already in a game!");
         }
     }
 
-    private void assertUsersExist(List<User> users) {
-        users.forEach(p -> {
-            if (!userRepository.getUsers().anyMatch(p2 -> p2.equals(p))) {
-                throw new RacegridException(RacegridError.USER_NOT_FOUND, "User doesn't exist: " + p);
-            }
-        });
-    }
-
-    private boolean isUserInGame(User p) {
+    public boolean isUserInGame(Id userId) {
         return games.stream()
-                .anyMatch(g -> g.users().contains(p));
+                .anyMatch(g -> g.users().stream()
+                        .anyMatch(u -> u.id().equals(userId)));
     }
 
     public Stream<GameEntry> getGames() {

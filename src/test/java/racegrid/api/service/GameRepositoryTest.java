@@ -24,7 +24,7 @@ public class GameRepositoryTest extends TestCase {
     public void setup() {
         RacegridProps props = new RacegridProps();
         userRepository = new UserRepository(props);
-        gameRepository = new GameRepository(userRepository);
+        gameRepository = new GameRepository();
     }
 
     @Test
@@ -33,12 +33,6 @@ public class GameRepositoryTest extends TestCase {
         User p2 = newUser("Y");
         GameEntry newGame = gameRepository.newGame(Arrays.asList(p1, p2));
         assertNotNull(newGame);
-    }
-
-    @Test(expected = RacegridException.class)
-    public void newGame_shouldNotAllowNonExistantUsers() {
-        User p1 = new User("X", Id.of("BAD_ID"));
-        gameRepository.newGame(Collections.singletonList(p1));
     }
 
     @Test(expected = RacegridException.class)
@@ -59,7 +53,7 @@ public class GameRepositoryTest extends TestCase {
 
     @Test
     public void gameById() {
-        GameEntry game = gameRepository.newGame(Arrays.asList(newUser("X")));
+        GameEntry game = gameRepository.newGame(Collections.singletonList(newUser("X")));
         assertEquals(Optional.of(game), gameRepository.gameById(game.id()));
     }
 

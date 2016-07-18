@@ -5,6 +5,7 @@ import org.junit.Test;
 import racegrid.api.model.Id;
 import racegrid.api.model.NewUserResponse;
 import racegrid.api.model.RacegridException;
+import racegrid.api.model.User;
 import racegrid.model.Lobby;
 
 import java.util.List;
@@ -24,20 +25,14 @@ public class LobbyRepositoryTest {
     public void setup() {
         RacegridProps props = new RacegridProps();
         userRepository = new UserRepository(props);
-        lobbyRepository = new LobbyRepository(userRepository);
-    }
-
-    @Test(expected = RacegridException.class)
-    public void createLobby_shouldCheckCreatorExists() {
-        Id hostId = Id.of("BAD_ID");
-        lobbyRepository.createLobby(hostId);
+        lobbyRepository = new LobbyRepository();
     }
 
     @Test
     public void createLobby() {
-        Id userId = createNewUser(NAME);
-        Id lobbyId = lobbyRepository.createLobby(userId);
-        assertEquals(userId, lobbyById(lobbyId).getHost().id());
+        User host = createNewUser(NAME);
+        Id lobbyId = lobbyRepository.createLobby(host);
+        assertEquals(host, lobbyById(lobbyId).getHost());
     }
 
     @Test
@@ -45,112 +40,106 @@ public class LobbyRepositoryTest {
         List<Lobby> lobbies = lobbyRepository.getLobbies().collect(Collectors.toList());
         assertEquals(0, lobbies.size());
 
-        Id userId = createNewUser(NAME);
-        lobbyRepository.createLobby(userId);
+        User host = createNewUser(NAME);
+        lobbyRepository.createLobby(host);
 
         lobbies = lobbyRepository.getLobbies().collect(Collectors.toList());
         assertEquals(1, lobbies.size());
-        assertEquals(userId, lobbies.get(0).getHost().id());
-    }
-
-    @Test(expected = RacegridException.class)
-    public void inviteToLobby_shouldThrowWhenInvitedNotFound() {
-        Id userId = createNewUser(NAME);
-        createLobbyAndInvite(userId, Id.of("BAD_ID"));
+        assertEquals(host, lobbies.get(0).getHost());
     }
 
     @Test(expected = RacegridException.class)
     public void inviteToLobby_shouldThrowWhenNotInLobby() {
-        Id userId = createNewUser(NAME);
-        Id otherUserId = createNewUser(NAME_2);
-        lobbyRepository.inviteToLobby(userId, otherUserId);
+        User host = createNewUser(NAME);
+        User otherUser = createNewUser(NAME_2);
+        lobbyRepository.inviteToLobby(host.id(), otherUser);
     }
 
     @Test
     public void inviteToLobby() {
-        Id userId = createNewUser(NAME);
-        Id otherUserId = createNewUser(NAME_2);
-        createLobbyAndInvite(userId, otherUserId);
+        User host = createNewUser(NAME);
+        User otherUser = createNewUser(NAME_2);
+        createLobbyAndInvite(host, otherUser);
     }
 
     @Test
     public void acceptInvite() {
-        Id userId = createNewUser(NAME);
-        Id otherUserId = createNewUser(NAME_2);
-        createLobbyInviteAndAccept(userId, otherUserId);
+        User host = createNewUser(NAME);
+        User otherUser = createNewUser(NAME_2);
+        createLobbyInviteAndAccept(host, otherUser);
     }
 
     @Test
     public void declineInvite() {
-        Id userId = createNewUser(NAME);
-        Id otherUserId = createNewUser(NAME_2);
-        createLobbyAndInvite(userId, otherUserId);
-        lobbyRepository.declineInvite(otherUserId);
+        User host = createNewUser(NAME);
+        User otherUser = createNewUser(NAME_2);
+        createLobbyAndInvite(host, otherUser);
+        lobbyRepository.declineInvite(otherUser.id());
     }
 
     @Test
     public void undoInvite() {
-        Id userId = createNewUser(NAME);
-        Id otherUserId = createNewUser(NAME_2);
-        createLobbyAndInvite(userId, otherUserId);
-        lobbyRepository.undoInvite(userId, otherUserId);
+        User host = createNewUser(NAME);
+        User otherUser = createNewUser(NAME_2);
+        createLobbyAndInvite(host, otherUser);
+        lobbyRepository.undoInvite(host.id(), otherUser.id());
     }
 
     @Test
     public void kickPlayer() {
-        Id userId = createNewUser(NAME);
-        Id otherUserId = createNewUser(NAME_2);
-        createLobbyInviteAndAccept(userId, otherUserId);
-        lobbyRepository.kickPlayer(userId, otherUserId);
+        User host = createNewUser(NAME);
+        User otherUser = createNewUser(NAME_2);
+        createLobbyInviteAndAccept(host, otherUser);
+        lobbyRepository.kickUser(host.id(), otherUser.id());
     }
 
     @Test(expected = RacegridException.class)
     public void leaveLobby_shouldThrowIfNotInLobby() {
-        Id userId = createNewUser(NAME);
-        lobbyRepository.leaveLobby(userId);
+        User host = createNewUser(NAME);
+        lobbyRepository.leaveLobby(host.id());
     }
 
     @Test
     public void leaveLobby_shouldSetNewHost() {
-        Id userId = createNewUser(NAME);
-        Id otherUserId = createNewUser(NAME_2);
-        Lobby lobby = createLobbyInviteAndAccept(userId, otherUserId);
-        lobbyRepository.leaveLobby(userId);
-        assertEquals(otherUserId, lobby.getHost().id());
+        User host = createNewUser(NAME);
+        User otherUser = createNewUser(NAME_2);
+        Lobby lobby = createLobbyInviteAndAccept(host, otherUser);
+        lobbyRepository.leaveLobby(host.id());
+        assertEquals(otherUser, lobby.getHost());
     }
 
     @Test
     public void leaveLobby_shouldRemoveLobbyIfAlone() {
-        Id userId = createNewUser(NAME);
-        Id lobbyId = lobbyRepository.createLobby(userId);
-        lobbyRepository.leaveLobby(userId);
+        User host = createNewUser(NAME);
+        Id lobbyId = lobbyRepository.createLobby(host);
+        lobbyRepository.leaveLobby(host.id());
         boolean lobbyRemoved = lobbyRepository.getLobbies()
                 .noneMatch(l -> l.getId().equals(lobbyId));
         assertTrue(lobbyRemoved);
     }
 
-    private void createLobbyAndInvite(Id userId, Id otherUserId) {
-        lobbyRepository.createLobby(userId);
-        lobbyRepository.inviteToLobby(userId, otherUserId);
+    private void createLobbyAndInvite(User host, User otherUser) {
+        lobbyRepository.createLobby(host);
+        lobbyRepository.inviteToLobby(host.id(), otherUser);
     }
 
-    private Lobby createLobbyInviteAndAccept(Id userId, Id otherUserId) {
-        Id lobbyId = lobbyRepository.createLobby(userId);
-        lobbyRepository.inviteToLobby(userId, otherUserId);
-        lobbyRepository.acceptInvite(otherUserId);
+    private Lobby createLobbyInviteAndAccept(User host, User otherUser) {
+        Id lobbyId = lobbyRepository.createLobby(host);
+        lobbyRepository.inviteToLobby(host.id(), otherUser);
+        lobbyRepository.acceptInvite(otherUser);
         return lobbyById(lobbyId);
     }
 
-    private Lobby lobbyById(Id lobbyId){
+    private Lobby lobbyById(Id lobbyId) {
         return lobbyRepository.getLobbies()
                 .filter(l -> l.getId().equals(lobbyId))
                 .findAny()
                 .orElseThrow(RuntimeException::new);
     }
 
-    private Id createNewUser(String name) {
+    private User createNewUser(String name) {
         NewUserResponse response = userRepository.newUser(name);
-        return response.getUser().id();
+        return response.getUser();
     }
 
 }
