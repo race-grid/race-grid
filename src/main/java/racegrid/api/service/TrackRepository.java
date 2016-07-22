@@ -7,33 +7,34 @@ import racegrid.api.model.RaceTrack;
 import racegrid.api.model.RacegridError;
 import racegrid.api.model.RacegridException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 @Service
 public class TrackRepository {
 
     private final ObjectMapper objectMapper;
-    private final Charset charset = Charset.forName("UTF-8");
 
     @Autowired
     public TrackRepository(ObjectMapper objectMapper){
         this.objectMapper = objectMapper;
     }
 
-    public RaceTrack loadTrackFromFile(Path filePath) {
+    public RaceTrack loadTrackFromFile(String resourceName) {
         try {
-            String json = readTextFile(filePath);
+            InputStream inputStream = getClass().getResourceAsStream(resourceName);
+            String json = textFromInputStream(inputStream);
             return objectMapper.readValue(json, RaceTrack.class);
         } catch (IOException e) {
-            throw new RacegridException(RacegridError.INTERNAL, "Could not load track from file: " + filePath);
+            throw new RacegridException(RacegridError.INTERNAL, "Could not load track from file: " + resourceName);
         }
     }
 
-    private String readTextFile(Path filePath) throws IOException {
-        byte[] bytes = Files.readAllBytes(filePath);
-        return new String(bytes, charset);
+    private String textFromInputStream(InputStream inputStream){
+        return new BufferedReader(new InputStreamReader(inputStream))
+                .lines().collect(Collectors.joining("\n"));
     }
 }

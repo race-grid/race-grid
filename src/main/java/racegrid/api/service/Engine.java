@@ -23,8 +23,6 @@ import racegrid.api.model.UserAuth;
 import racegrid.api.model.Vector;
 import racegrid.model.Lobby;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +34,7 @@ import java.util.stream.Stream;
 @Service
 public class Engine {
 
-    private final static String TRACK_1_FILE_PATH = "race-track-1.json";
+    private final static String TRACK_1_FILE_PATH = "/race-track-1.json";
 
 
     private final TrackRepository trackRepository;
@@ -62,16 +60,16 @@ public class Engine {
 
     public Id newTimedGameVsAi(UserAuth auth, int numOpponents, GameSettings settings) {
         User user = assertUserExistsAndAuthenticated(auth);
+        RaceTrack track = track();
         GameEntry game = gameRepository.newGame(Collections.singletonList(user));
         Player player = new Player(user.name(), user.id());
-        TimebasedGameRunner gameRunner = GameRunnerFactory.timeBasedVsAi(track(), player, botSettings(numOpponents), settings);
+        TimebasedGameRunner gameRunner = GameRunnerFactory.timeBasedVsAi(track, player, botSettings(numOpponents), settings);
         games.put(game.id(), gameRunner);
         return game.id();
     }
 
     private RaceTrack track() {
-        Path path = Paths.get(getClass().getClassLoader().getResource(TRACK_1_FILE_PATH).getFile());
-        return trackRepository.loadTrackFromFile(path);
+        return trackRepository.loadTrackFromFile(TRACK_1_FILE_PATH);
     }
 
     private GameBotSettings botSettings(int numBots) {
@@ -85,9 +83,10 @@ public class Engine {
 
     public Id newSlowGameVsAi(UserAuth auth, int numOpponents) {
         User user = assertUserExistsAndAuthenticated(auth);
+        RaceTrack track = track();
         GameEntry game = gameRepository.newGame(Collections.singletonList(user));
         Player player = new Player(user.name(), user.id());
-        SlowGameRunner gameRunner = GameRunnerFactory.slowVsAi(track(), player, botSettings(numOpponents));
+        SlowGameRunner gameRunner = GameRunnerFactory.slowVsAi(track, player, botSettings(numOpponents));
         games.put(game.id(), gameRunner);
         return game.id();
     }

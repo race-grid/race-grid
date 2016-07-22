@@ -19,10 +19,9 @@ public class TrackRepositoryTest {
 
     @Test
     public void loadTrack() throws IOException {
-        String fileName = "test-race-track.json";
-        Path filePath = filePath(fileName);
+        String fileName = "/test-race-track.json";
 
-        RaceTrack track = repository.loadTrackFromFile(filePath);
+        RaceTrack track = repository.loadTrackFromFile(fileName);
 
         assertEquals(10, track.height());
         assertEquals(20, track.width());
