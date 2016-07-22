@@ -140,6 +140,6 @@ public class ApiControllerTestClient {
     public void inviteToLobby(Id userId, UUID userHash, Id otherUserId) {
         MockHttpServletRequestBuilder request = post(API_PATH + "/invite-to-lobby?userId=" + userId +
                 "&userHash=" + userHash + "&otherUserId=" + otherUserId);
-        callAndParse(request, Void.class);
+        call(request);
     }
 }
