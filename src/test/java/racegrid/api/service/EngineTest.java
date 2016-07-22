@@ -96,6 +96,19 @@ public class EngineTest {
     }
 
     @Test(expected = RacegridException.class)
+    public void removeUser_shouldThrowForUnknownUser() {
+        UserAuth auth = new UserAuth(Id.of("UNKNOWN ID"), UUID.randomUUID());
+        engine.removeUser(auth);
+    }
+
+    @Test
+    public void removeUser() {
+        NewUserResponse response = engine.newUser(USER_NAME);
+        UserAuth auth = authFromNewUser(response);
+        engine.removeUser(auth);
+    }
+
+    @Test(expected = RacegridException.class)
     public void createLobby_shouldThrowForUnknownUser() {
         engine.createLobby(UNKNOWN_AUTH);
     }

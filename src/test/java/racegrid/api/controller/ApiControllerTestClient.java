@@ -72,7 +72,7 @@ public class ApiControllerTestClient {
     }
 
     public NewUserResponse newUser(String name) {
-        MvcResult result = call(post(API_PATH + "/users?name=" + name));
+        MvcResult result = call(post(API_PATH + "/create-user?name=" + name));
         return parse(result, NewUserResponse.class);
     }
 

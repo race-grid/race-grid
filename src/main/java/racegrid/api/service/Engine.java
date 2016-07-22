@@ -203,4 +203,9 @@ public class Engine {
     public Stream<Lobby> getLobbies() {
         return lobbyRepository.getLobbies();
     }
+
+    public void removeUser(UserAuth auth) {
+        assertUserExistsAndAuthenticated(auth);
+        userRepository.removeUser(auth.id());
+    }
 }

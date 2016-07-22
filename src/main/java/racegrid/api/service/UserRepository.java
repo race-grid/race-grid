@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import racegrid.api.model.Id;
 import racegrid.api.model.NewUserResponse;
+import racegrid.api.model.RacegridError;
+import racegrid.api.model.RacegridException;
 import racegrid.api.model.User;
 import racegrid.api.model.UserAuth;
 
@@ -64,4 +66,19 @@ public class UserRepository {
                 .filter(u -> u.id().equals(id))
                 .findFirst();
     }
+
+    public void removeUser(Id id) {
+        assertUserExists(id);
+        users.removeIf(u -> u.id().equals(id));
+        hashes.remove(id);
+    }
+
+    private void assertUserExists(Id id) {
+        boolean exists = users.stream().anyMatch(u -> u.id().equals(id));
+        if(!exists){
+            throw new RacegridException(RacegridError.USER_NOT_FOUND, "No user with ID: " + id);
+        }
+    }
+
+
 }

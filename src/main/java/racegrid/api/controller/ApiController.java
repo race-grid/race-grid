@@ -41,9 +41,14 @@ public class ApiController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "users", method = RequestMethod.POST)
-    public NewUserResponse newUser(@RequestParam String name) {
+    @RequestMapping(value = "create-user", method = RequestMethod.POST)
+    public NewUserResponse createUser(@RequestParam String name) {
         return engine.newUser(name);
+    }
+
+    @RequestMapping(value = "remove-user", method = RequestMethod.POST)
+    public void removeUser(@RequestParam Id userId, @RequestParam UUID userHash) {
+        engine.removeUser(new UserAuth(userId, userHash));
     }
 
     @RequestMapping(value = "users", method = RequestMethod.GET)
@@ -70,7 +75,7 @@ public class ApiController {
     }
 
     @RequestMapping(value = "invite-to-lobby", method = RequestMethod.POST)
-    public void inviteToLobby(@RequestParam Id userId, @RequestParam UUID userHash, @RequestParam Id otherUserId){
+    public void inviteToLobby(@RequestParam Id userId, @RequestParam UUID userHash, @RequestParam Id otherUserId) {
         engine.inviteToLobby(new UserAuth(userId, userHash), otherUserId);
     }
 
