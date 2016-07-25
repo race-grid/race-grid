@@ -1,6 +1,7 @@
 package racegrid.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import racegrid.api.Util;
 import racegrid.api.model.Collision;
@@ -107,6 +108,7 @@ public class ApiController {
     }
 
     @ExceptionHandler(RacegridException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleError(HttpServletRequest req, RacegridException exception) {
         String url = req.getRequestURL().toString();
         String msg = exception.getMessage();
