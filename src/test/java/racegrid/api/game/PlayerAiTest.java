@@ -5,6 +5,7 @@ import org.junit.Test;
 import racegrid.api.game.gameRunner.PlayerAi;
 import racegrid.api.model.Id;
 import racegrid.api.model.Player;
+import racegrid.api.model.RaceTrack;
 import racegrid.api.model.Vector;
 
 import java.util.Collections;
@@ -24,7 +25,8 @@ public class PlayerAiTest {
     @Before
     public void setup() {
         collisionHandler = mock(CollisionHandler.class);
-        board = new MutableGameBoard(collisionHandler);
+        RaceTrack track = mock(RaceTrack.class);
+        board = new MutableGameBoard(track, collisionHandler);
     }
 
     @Test

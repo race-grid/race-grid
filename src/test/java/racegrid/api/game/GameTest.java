@@ -40,13 +40,13 @@ public class GameTest {
     }
 
     private CollisionHandler collisionHandler() {
-        return new CollisionHandler(track());
+        return new CollisionHandler();
     }
 
     @Test(expected = RacegridException.class)
     public void makeMove_shouldNotAllowMoveAtOpponentsTurn() {
         CollisionHandler collisionHandler = collisionHandler();
-        MutableGameBoard board = new MutableGameBoard(collisionHandler);
+        MutableGameBoard board = new MutableGameBoard(track(), collisionHandler);
         board.addPlayer(P1, new Vector(0, 0));
         board.addPlayer(P2, new Vector(1, 0));
         Game game = new Game(board, P1.id());
@@ -56,7 +56,7 @@ public class GameTest {
     @Test(expected = RacegridException.class)
     public void makeMove_shouldNotAllowInvalidMove() {
         CollisionHandler collisionHandler = collisionHandler();
-        MutableGameBoard board = new MutableGameBoard(collisionHandler);
+        MutableGameBoard board = new MutableGameBoard(track(), collisionHandler);
         board.addPlayer(P1, new Vector(0, 0));
         board.addPlayer(P2, new Vector(1, 0));
         Game game = new Game(board, P1.id());
@@ -66,12 +66,12 @@ public class GameTest {
     @Test
     public void makeMove_shouldBeAbleToFinish() {
         CollisionHandler collisionHandler = mock(CollisionHandler.class);
-        MutableGameBoard board = new MutableGameBoard(collisionHandler);
+        MutableGameBoard board = new MutableGameBoard(track(), collisionHandler);
         board.addPlayer(P1, new Vector(0, 0));
         Game game = new Game(board, P1.id());
 
-        doReturn(true).when(collisionHandler).passingGoalLine(any(), any());
-        doReturn(Optional.empty()).when(collisionHandler).collisionBetween(any(), any());
+        doReturn(true).when(collisionHandler).passingGoalLine(any(), any(), any());
+        doReturn(Optional.empty()).when(collisionHandler).collisionBetween(any(), any(), any());
 
         assertFalse(game.getBoard().getPlayerStates().get(P1.id()).hasFinished());
         game.makeMove(P1.id(), new Vector(1, 1));
@@ -82,8 +82,8 @@ public class GameTest {
     @Test
     public void makeMove() {
         RaceTrack track = track();
-        CollisionHandler collisionHandler = new CollisionHandler(track);
-        MutableGameBoard board = new MutableGameBoard(collisionHandler);
+        CollisionHandler collisionHandler = new CollisionHandler();
+        MutableGameBoard board = new MutableGameBoard(track, collisionHandler);
         board.addPlayer(P1, track.startPositions().get(0));
         board.addPlayer(P2, track.startPositions().get(1));
         Game game = new Game(board, P1.id());
@@ -100,11 +100,11 @@ public class GameTest {
         Vector blockedPos = new Vector(1, 0);
         Collision collision = new Collision(new ExactVector(1, 0), new Vector(0, 0), CollisionType.WITH_WALL);
         CollisionHandler collisionHandler = mock(CollisionHandler.class);
-        MutableGameBoard board = new MutableGameBoard(collisionHandler);
+        MutableGameBoard board = new MutableGameBoard(track(), collisionHandler);
         board.addPlayer(new Player("p1", P1.id()), new Vector(0, 0));
 
-        doReturn(Optional.empty()).when(collisionHandler).collisionBetween(any(), any());
-        doReturn(Optional.of(collision)).when(collisionHandler).collisionBetween(any(), eq(blockedPos));
+        doReturn(Optional.empty()).when(collisionHandler).collisionBetween(any(), any(), any());
+        doReturn(Optional.of(collision)).when(collisionHandler).collisionBetween(any(), any(), eq(blockedPos));
 
         Game game = new Game(board, P1.id());
         Map<Vector, Optional<Collision>> moves = game.getValidMovesWithCollisionData(P1.id());

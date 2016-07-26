@@ -10,6 +10,7 @@ import racegrid.api.model.GameSettings;
 import racegrid.api.model.GameState;
 import racegrid.api.model.Id;
 import racegrid.api.model.NewUserResponse;
+import racegrid.api.model.RaceTrack;
 import racegrid.api.model.RacegridException;
 import racegrid.api.model.User;
 import racegrid.api.model.UserAuth;
@@ -90,6 +91,11 @@ public class ApiController {
     public Id newSlowGameVsAi(@RequestParam Id userId, @RequestParam UUID userHash, @RequestParam int numOpponents) {
         GameSettings settings = new GameSettings(5);
         return engine.newSlowGameVsAi(new UserAuth(userId, userHash), numOpponents);
+    }
+
+    @RequestMapping(value = "track-data", method = RequestMethod.GET)
+    public RaceTrack getTrackData(@RequestParam Id gameId) {
+        return engine.getTrackData(gameId);
     }
 
     @RequestMapping(value = "possible-moves", method = RequestMethod.GET)

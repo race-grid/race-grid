@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public class MutableGameBoard extends GameBoard {
 
-    public MutableGameBoard(CollisionHandler collisionHandler) {
-        super(collisionHandler);
+    public MutableGameBoard(RaceTrack raceTrack, CollisionHandler collisionHandler) {
+        super(raceTrack, collisionHandler);
     }
 
     public void addPlayer(Player player, Vector position) {
@@ -22,14 +22,14 @@ public class MutableGameBoard extends GameBoard {
         Vector from = getPlayerCurrentPosition(playerId);
         PlayerGameState state = playerStates.get(playerId);
 
-        Optional<Collision> collision = collisionHandler.collisionBetween(from, destination);
+        Optional<Collision> collision = collisionHandler.collisionBetween(raceTrack, from, destination);
 
         Vector actualNewPos = collision
                 .map(Collision::resultingPosition)
                 .orElse(destination);
         state.positionHistory().add(actualNewPos);
 
-        boolean playerPassedGoalLine = collisionHandler.passingGoalLine(from, actualNewPos);
+        boolean playerPassedGoalLine = collisionHandler.passingGoalLine(raceTrack, from, actualNewPos);
         if(playerPassedGoalLine){
             state.setHasFinished();
         }

@@ -28,8 +28,8 @@ public class GameRunnerFactory {
     private static GameAndBots setupGameAndBots(RaceTrack track, Player player, GameBotSettings aiSettings) {
         assertEnoughStartPositions(track, aiSettings.botNames().size() + 1);
 
-        CollisionHandler collisionHandler = new CollisionHandler(track);
-        MutableGameBoard board = new MutableGameBoard(collisionHandler);
+        CollisionHandler collisionHandler = new CollisionHandler();
+        MutableGameBoard board = new MutableGameBoard(track, collisionHandler);
         Vector playerStartPos = track.startPositions().get(0);
         board.addPlayer(player, playerStartPos);
 

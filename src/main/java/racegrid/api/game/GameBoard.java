@@ -3,7 +3,7 @@ package racegrid.api.game;
 import racegrid.api.model.Id;
 import racegrid.api.model.Player;
 import racegrid.api.model.PlayerGameState;
-import racegrid.api.model.RacegridException;
+import racegrid.api.model.RaceTrack;
 import racegrid.api.model.Vector;
 
 import java.util.HashMap;
@@ -16,8 +16,10 @@ public class GameBoard {
 
     protected final HashMap<Id, PlayerGameState> playerStates = new HashMap<>();
     protected final CollisionHandler collisionHandler;
+    protected final RaceTrack raceTrack;
 
-    public GameBoard(CollisionHandler collisionHandler) {
+    public GameBoard(RaceTrack raceTrack, CollisionHandler collisionHandler) {
+        this.raceTrack = raceTrack;
         this.collisionHandler = collisionHandler;
     }
 
@@ -51,7 +53,11 @@ public class GameBoard {
         return positionHistory.get(index);
     }
 
-    public CollisionHandler getCollisionHandler(){
+    public CollisionHandler getCollisionHandler() {
         return collisionHandler;
+    }
+
+    public RaceTrack getRaceTrack() {
+        return raceTrack;
     }
 }

@@ -53,9 +53,10 @@ public class Game {
     private Map<Vector, Optional<Collision>> getCollisionDataForGivenMoves(Id playerId, List<Vector> moves) {
         Vector from = board.getPlayerCurrentPosition(playerId);
         CollisionHandler collisionHandler = board.getCollisionHandler();
+        RaceTrack track = board.getRaceTrack();
         return moves.stream().collect(Collectors.toMap(
                 to -> to,
-                to -> collisionHandler.collisionBetween(from, to)
+                to -> collisionHandler.collisionBetween(track, from, to)
         ));
     }
 

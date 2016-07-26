@@ -120,6 +120,11 @@ public class Engine {
         return game.getValidMovesWithCollisionData(user.id());
     }
 
+    public RaceTrack getTrackData(Id gameId) {
+        GameRunner game = assertGameExists(gameId);
+        return game.getBoard().getRaceTrack();
+    }
+
     public GameState getGameState(Id gameId) {
         GameRunner game = assertGameExists(gameId);
         return game.getGameState();
